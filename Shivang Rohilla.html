@@ -1,0 +1,426 @@
+<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#faf9f5;color:#141413}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
+<title>Shivang Rohilla</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700;12..96,800&family=Instrument+Sans:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap">
+<style>
+/* Layout: sticky bar, split hero (name + replayable log), case-study section, then plain stacked sections on a 1080px measure */
+:root {
+  --bg: #F2F4F8;
+  --surface: #FFFFFF;
+  --surface-2: #E8ECF3;
+  --fg: #111A2C;
+  --muted: #55617A;
+  --line: #D3DAE6;
+  --accent: #1B5BD1;
+  --accent-ink: #FFFFFF;
+  --crit: #C4203A;
+  --high: #CC4A0B;
+  --med: #8F6204;
+  --low: #2B6A58;
+  --term-bg: #0A0F1D;
+  --term-fg: #C7D1E6;
+  --term-dim: #6F7C97;
+  --term-fail: #FF8F7A;
+  --term-ok: #7BD8A4;
+  --term-probe: #F2C14E;
+  --display: "Bricolage Grotesque", "Segoe UI", system-ui, sans-serif;
+  --body: "Instrument Sans", "Segoe UI", system-ui, sans-serif;
+  --mono: "JetBrains Mono", ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #0B111F; --surface: #121A2C; --surface-2: #1A2438; --fg: #E6EBF5; --muted: #92A0BA; --line: #25314B;
+    --accent: #6CA6FF; --accent-ink: #08101F; --crit: #FF6F83; --high: #FF9B5E; --med: #F2C14E; --low: #6FD0A0;
+    --term-bg: #060A15; color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #0B111F; --surface: #121A2C; --surface-2: #1A2438; --fg: #E6EBF5; --muted: #92A0BA; --line: #25314B;
+  --accent: #6CA6FF; --accent-ink: #08101F; --crit: #FF6F83; --high: #FF9B5E; --med: #F2C14E; --low: #6FD0A0;
+  --term-bg: #060A15; color-scheme: dark;
+}
+
+* { box-sizing: border-box; }
+html { scroll-behavior: smooth; }
+body {
+  background: var(--bg); color: var(--fg);
+  font-family: var(--body); font-size: 16px; line-height: 1.6;
+  padding-inline: 20px; padding-block: 0;
+  -webkit-font-smoothing: antialiased;
+}
+a { color: inherit; }
+:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; border-radius: 4px; }
+.wrap { max-width: 1080px; margin-inline: auto; }
+section { scroll-margin-top: 72px; }
+
+/* top bar */
+.bar { position: sticky; top: env(safe-area-inset-top, 0px); z-index: 10; background: color-mix(in srgb, var(--bg) 88%, transparent); backdrop-filter: blur(10px); border-bottom: 1px solid var(--line); margin-inline: -20px; padding-inline: 20px; }
+.bar .wrap { display: flex; align-items: center; justify-content: space-between; gap: 16px; height: 56px; }
+.brand { font-family: var(--display); font-weight: 700; font-size: 17px; text-decoration: none; letter-spacing: -0.01em; }
+.nav { display: flex; align-items: center; gap: 22px; font-size: 14px; }
+.nav a { text-decoration: none; color: var(--muted); }
+.nav a:hover { color: var(--fg); }
+.toggle { font: inherit; font-size: 13px; color: var(--fg); background: transparent; border: 1px solid var(--line); border-radius: 999px; padding: 4px 12px; cursor: pointer; }
+.toggle:hover { border-color: var(--muted); }
+
+/* hero */
+.hero { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.05fr); gap: 48px; align-items: center; padding-block: 64px 56px; }
+.eyebrow { font-family: var(--mono); font-size: 12px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--accent); margin: 0 0 18px; }
+h1 { font-family: var(--display); font-weight: 800; font-size: clamp(44px, 7vw, 76px); line-height: 0.98; letter-spacing: -0.03em; margin: 0 0 22px; text-wrap: balance; }
+.lede { font-size: 19px; line-height: 1.55; color: var(--muted); max-width: 34em; margin: 0 0 28px; }
+.lede b { color: var(--fg); font-weight: 600; }
+.cta { display: flex; flex-wrap: wrap; gap: 12px; }
+.btn { display: inline-flex; align-items: center; gap: 8px; font-weight: 600; font-size: 15px; text-decoration: none; padding: 11px 18px; border-radius: 8px; border: 1px solid var(--line); background: var(--surface); }
+.btn:hover { border-color: var(--muted); }
+.btn.primary { background: var(--accent); color: var(--accent-ink); border-color: var(--accent); }
+.btn.primary:hover { filter: brightness(1.08); }
+
+/* terminal */
+.term { background: var(--term-bg); color: var(--term-fg); border-radius: 10px; border: 1px solid var(--line); overflow: hidden; box-shadow: 0 18px 50px -24px rgba(5, 10, 25, 0.55); min-width: 0; }
+.term-head { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 10px 14px; border-bottom: 1px solid #1B2540; font-family: var(--mono); font-size: 12px; color: var(--term-dim); }
+.term-head button { font: inherit; color: var(--term-fg); background: #131C33; border: 1px solid #26335A; border-radius: 6px; padding: 3px 10px; cursor: pointer; }
+.term-head button:hover { background: #1A2547; }
+.log { font-family: var(--mono); font-size: 12.5px; line-height: 1.7; padding: 14px; margin: 0; min-height: 392px; }
+.ln { display: block; white-space: pre-wrap; overflow-wrap: anywhere; padding-left: 10px; border-left: 2px solid transparent; }
+.ln .ts { color: var(--term-dim); }
+.ln.fail { color: var(--term-fail); }
+.ln.ok { color: var(--term-ok); }
+.ln.probe { color: var(--term-probe); }
+.ln.skip { color: var(--term-dim); font-style: italic; }
+.ln.alert { margin: 4px 0 8px; padding: 3px 10px; font-weight: 500; color: #fff; border-left-width: 3px; background: rgba(255, 255, 255, 0.04); }
+.ln.alert.crit { border-color: #FF6F83; } .ln.alert.crit b { color: #FF6F83; }
+.ln.alert.high { border-color: #FF9B5E; } .ln.alert.high b { color: #FF9B5E; }
+.ln.alert.med { border-color: #F2C14E; } .ln.alert.med b { color: #F2C14E; }
+.ln.alert.low { border-color: #6FD0A0; } .ln.alert.low b { color: #6FD0A0; }
+.term-foot { display: flex; flex-wrap: wrap; gap: 6px 18px; padding: 10px 14px; border-top: 1px solid #1B2540; font-family: var(--mono); font-size: 12px; color: var(--term-dim); }
+.term-foot span b { font-weight: 500; }
+.t-crit b { color: #FF6F83; } .t-high b { color: #FF9B5E; } .t-med b { color: #F2C14E; } .t-low b { color: #6FD0A0; }
+.note { font-size: 13px; color: var(--muted); margin: 10px 2px 0; }
+
+/* generic sections */
+.block { padding-block: 56px; border-top: 1px solid var(--line); }
+.block h2 { font-family: var(--display); font-weight: 700; font-size: clamp(26px, 4vw, 34px); letter-spacing: -0.02em; line-height: 1.1; margin: 0 0 28px; text-wrap: balance; }
+.label { font-family: var(--mono); font-size: 12px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--muted); margin: 0 0 10px; }
+
+/* case study */
+.case { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.2fr); gap: 40px; margin-bottom: 36px; }
+.case h3 { font-family: var(--display); font-weight: 700; font-size: 24px; letter-spacing: -0.01em; margin: 0 0 12px; }
+.chips { display: flex; flex-wrap: wrap; gap: 8px; margin: 0 0 18px; padding: 0; list-style: none; }
+.chips li { font-family: var(--mono); font-size: 12px; padding: 3px 10px; border: 1px solid var(--line); border-radius: 999px; color: var(--muted); }
+.case ul.pts { margin: 0 0 22px; padding-left: 20px; }
+.case ul.pts li { margin-bottom: 8px; }
+.tbl-wrap { overflow-x: auto; border: 1px solid var(--line); border-radius: 10px; background: var(--surface); }
+table { width: 100%; border-collapse: collapse; font-size: 14px; min-width: 640px; }
+th { text-align: left; font-family: var(--mono); font-size: 11.5px; letter-spacing: 0.06em; text-transform: uppercase; color: var(--muted); font-weight: 500; padding: 10px 14px; border-bottom: 1px solid var(--line); background: var(--surface-2); white-space: nowrap; }
+td { padding: 11px 14px; border-bottom: 1px solid var(--line); vertical-align: top; }
+tr:last-child td { border-bottom: 0; }
+td.mono { font-family: var(--mono); font-size: 12.5px; white-space: nowrap; }
+.sev { display: inline-block; font-family: var(--mono); font-size: 11px; font-weight: 500; letter-spacing: 0.05em; padding: 2px 8px; border-radius: 4px; border: 1px solid currentColor; }
+.sev.crit { color: var(--crit); } .sev.high { color: var(--high); } .sev.med { color: var(--med); } .sev.low { color: var(--low); }
+
+/* learning strip */
+.now { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 16px; margin-top: 32px; }
+.now div { background: var(--surface); border: 1px solid var(--line); border-radius: 10px; padding: 16px 18px; }
+.now p { margin: 0; }
+.now .k { font-family: var(--mono); font-size: 11.5px; letter-spacing: 0.06em; text-transform: uppercase; color: var(--accent); margin-bottom: 4px; }
+
+/* experience + skills */
+.role { display: grid; grid-template-columns: minmax(0, 220px) minmax(0, 1fr); gap: 32px; }
+.role .when { font-family: var(--mono); font-size: 13px; color: var(--muted); }
+.role h3 { font-family: var(--display); font-size: 21px; margin: 0 0 2px; letter-spacing: -0.01em; }
+.role .org { color: var(--muted); margin: 0 0 14px; }
+.role ul { margin: 0; padding-left: 20px; }
+.role li { margin-bottom: 8px; }
+.cols { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 36px; }
+.cols h3 { font-family: var(--display); font-size: 18px; margin: 0 0 12px; }
+.cols ul { list-style: none; margin: 0; padding: 0; }
+.cols li { padding: 7px 0; border-bottom: 1px solid var(--line); font-size: 15px; }
+.cols li:last-child { border-bottom: 0; }
+.two { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 36px; }
+.item { margin-bottom: 18px; }
+.item b { display: block; font-weight: 600; }
+.item span { color: var(--muted); font-size: 15px; }
+
+/* contact */
+.contact { display: grid; grid-template-columns: minmax(0, 1.1fr) minmax(0, 1fr); gap: 40px; align-items: start; }
+.contact p { margin: 0 0 18px; color: var(--muted); font-size: 18px; max-width: 28em; }
+.mail { display: flex; flex-wrap: wrap; align-items: center; gap: 10px; font-family: var(--mono); font-size: 15px; margin-bottom: 18px; }
+.mail code { background: var(--surface); border: 1px solid var(--line); padding: 8px 12px; border-radius: 8px; overflow-wrap: anywhere; user-select: all; }
+.mail button { font: inherit; font-family: var(--body); font-size: 14px; font-weight: 600; color: var(--fg); background: transparent; border: 1px solid var(--line); border-radius: 8px; padding: 8px 14px; cursor: pointer; }
+.mail button:hover { border-color: var(--muted); }
+footer { padding-block: 28px 36px; border-top: 1px solid var(--line); color: var(--muted); font-size: 13px; }
+
+@media (max-width: 900px) {
+  .hero, .case, .contact { grid-template-columns: minmax(0, 1fr); gap: 32px; }
+  .hero { padding-block: 40px 40px; }
+  .cols { grid-template-columns: minmax(0, 1fr); gap: 28px; }
+  .two { grid-template-columns: minmax(0, 1fr); }
+  .role { grid-template-columns: minmax(0, 1fr); gap: 6px; }
+}
+@media (max-width: 640px) {
+  .nav a { display: none; }
+  .log { min-height: 0; font-size: 12px; }
+  .lede { font-size: 17px; }
+}
+@media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } }
+</style>
+
+<header class="bar">
+  <div class="wrap">
+    <a class="brand" href="#top">Shivang Rohilla</a>
+    <nav class="nav" aria-label="Sections">
+      <a href="#project">Project</a>
+      <a href="#experience">Experience</a>
+      <a href="#skills">Skills</a>
+      <a href="#contact">Contact</a>
+      <button class="toggle" id="theme" type="button" aria-label="Switch colour theme">Theme</button>
+    </nav>
+  </div>
+</header>
+
+<main class="wrap" id="top">
+  <section class="hero">
+    <div>
+      <p class="eyebrow">SOC Analyst (L1) candidate &middot; Delhi, India</p>
+      <h1>Shivang Rohilla</h1>
+      <p class="lede">Linux sysadmin moving into the SOC. <b>I read authentication logs, name the attack pattern, rate it and write it up</b> so the next person knows what to do.</p>
+      <div class="cta">
+        <a class="btn primary" href="https://github.com/rajputshivang2004-prog/ssh-log-analysis-lab" target="_blank" rel="noopener">See the SSH log lab</a>
+        <a class="btn" href="https://www.linkedin.com/in/shivang-rohilla-92287b272" target="_blank" rel="noopener">LinkedIn</a>
+        <a class="btn" href="#contact">Get in touch</a>
+      </div>
+    </div>
+
+    <div>
+      <div class="term">
+        <div class="term-head">
+          <span>auth.log &middot; sample, simulated attacks</span>
+          <button type="button" id="replay">&#9654; Replay</button>
+        </div>
+        <div class="log" id="log" role="log" aria-label="SSH authentication log with detections"></div>
+        <div class="term-foot" id="counts"></div>
+      </div>
+      <p class="note">Five attack patterns planted in a sample log, then found with grep, cut, sort and uniq.</p>
+    </div>
+  </section>
+
+  <section class="block" id="project">
+    <p class="label">Featured project</p>
+    <h2>Five attacks in one SSH log, found and written up</h2>
+    <div class="case">
+      <div>
+        <h3>SSH Log Analysis &amp; Incident Report</h3>
+        <ul class="chips" aria-label="Stack">
+          <li>Kali Linux</li><li>grep / cut / sort / uniq</li><li>Regex</li><li>journalctl</li><li>MITRE ATT&amp;CK</li>
+        </ul>
+      </div>
+      <div>
+        <ul class="pts">
+          <li>Counted failed logins per source IP to separate <b>brute force</b> (many tries on one account) from <b>password spraying</b> (one try each on many accounts).</li>
+          <li>Rated each finding by severity, built the timeline and wrote an incident report with containment steps: reset the account, block the IPs, move SSH to key-based login.</li>
+          <li>Repeated the work on real events from my own Kali VM: 9 failed logins in about 3 minutes across 5 made-up usernames, then a successful login.</li>
+        </ul>
+        <a class="btn" href="https://github.com/rajputshivang2004-prog/ssh-log-analysis-lab" target="_blank" rel="noopener">Read the incident report on GitHub</a>
+      </div>
+    </div>
+
+    <div class="tbl-wrap">
+      <table>
+        <thead><tr><th>Severity</th><th>Source IP</th><th>Target</th><th>What happened</th><th>Window</th><th>MITRE</th></tr></thead>
+        <tbody>
+          <tr><td><span class="sev crit">CRITICAL</span></td><td class="mono">203.0.113.77</td><td>deploy</td><td>6 failed logins, then a successful one from the same IP</td><td class="mono">13:00:10 to 13:01:30</td><td class="mono">T1110.001, T1078</td></tr>
+          <tr><td><span class="sev high">HIGH</span></td><td class="mono">203.0.113.50</td><td>root</td><td>8 failed logins on one account</td><td class="mono">02:30:10 to 02:30:17</td><td class="mono">T1110.001</td></tr>
+          <tr><td><span class="sev high">HIGH</span></td><td class="mono">198.51.100.7</td><td>6 accounts</td><td>One attempt each on admin, test, oracle, ubuntu, git, ftp</td><td class="mono">05:00:01 to 05:00:06</td><td class="mono">T1110.003</td></tr>
+          <tr><td><span class="sev med">MEDIUM</span></td><td class="mono">192.0.2.99</td><td>6 invalid users</td><td>Probing for usernames that do not exist</td><td class="mono">06:00:01 to 06:00:06</td><td class="mono">T1087.001</td></tr>
+          <tr><td><span class="sev low">LOW</span></td><td class="mono">10.0.0.99</td><td>alice</td><td>Key login outside working hours, no failures before it</td><td class="mono">03:12:00</td><td class="mono">T1078</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="now">
+      <div><p class="k">In progress</p><p>Google Cybersecurity Certificate</p></div>
+      <div><p class="k">In progress</p><p>Certified Ethical Hacker (CEH)</p></div>
+      <div><p class="k">Hands-on</p><p>TryHackMe SOC Level 1 path</p></div>
+    </div>
+  </section>
+
+  <section class="block" id="experience">
+    <p class="label">Experience</p>
+    <h2>Two years keeping a live identity-services site running</h2>
+    <div class="role">
+      <div class="when">June 2024 to present<br>Delhi</div>
+      <div>
+        <h3>IT &amp; Operations Center In-Charge</h3>
+        <p class="org">CSC e-Governance, under UIDAI</p>
+        <ul>
+          <li>Administer the Linux systems and network behind daily Aadhaar identity-verification services at a 12-workstation site.</li>
+          <li>Resolve system, network and biometric-device faults, and escalate what I cannot fix, so service keeps running.</li>
+          <li>Enforce access control and protect sensitive citizen data under UIDAI security and compliance guidelines.</li>
+          <li>Document incidents and prepare MIS reports for administrative oversight.</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <section class="block" id="skills">
+    <p class="label">Skills</p>
+    <h2>What I bring to a SOC shift</h2>
+    <div class="cols">
+      <div>
+        <h3>Detect and report</h3>
+        <ul>
+          <li>Log analysis and alert triage</li>
+          <li>Incident escalation and reporting</li>
+          <li>MITRE ATT&amp;CK mapping</li>
+          <li>Incident response lifecycle, Cyber Kill Chain</li>
+          <li>Splunk</li>
+        </ul>
+      </div>
+      <div>
+        <h3>Systems and network</h3>
+        <ul>
+          <li>RHEL / CentOS, SELinux, LVM, NFS, Samba</li>
+          <li>SSH hardening, firewalls</li>
+          <li>TCP/IP, DNS, DHCP, HTTP/HTTPS, VPN</li>
+          <li>Bash, cron, SQL / MySQL</li>
+        </ul>
+      </div>
+      <div>
+        <h3>Tools</h3>
+        <ul>
+          <li>Kali Linux</li>
+          <li>Wireshark</li>
+          <li>Nessus, Nikto, Gobuster</li>
+          <li>grep, cut, sort, uniq, regex</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <section class="block" id="education">
+    <p class="label">Education and training</p>
+    <div class="two">
+      <div>
+        <div class="item"><b>Bachelor of Computer Applications (BCA)</b><span>Asian International University, 2022 to 2025</span></div>
+        <div class="item"><b>Diploma in Ethical Hacking &amp; Cyber Security</b><span>Ducat Institute, one year: CCNA 200-301 networking, RHEL 8 administration, ethical hacking, Security+ topics, Python, SQL</span></div>
+      </div>
+      <div>
+        <div class="item"><b>Languages</b><span>English, Hindi</span></div>
+        <div class="item"><b>Availability</b><span>Open to rotational 24x7 shifts</span></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="block" id="contact">
+    <p class="label">Contact</p>
+    <div class="contact">
+      <div>
+        <h2>Hiring for a SOC L1 role?</h2>
+        <p>I would like to hear about it. Email is the fastest way to reach me.</p>
+      </div>
+      <div>
+        <div class="mail"><code id="email">rajputshivang2004@gmail.com</code><button type="button" id="copy">Copy</button></div>
+        <div class="cta">
+          <a class="btn" href="https://www.linkedin.com/in/shivang-rohilla-92287b272" target="_blank" rel="noopener">LinkedIn</a>
+          <a class="btn" href="https://github.com/rajputshivang2004-prog" target="_blank" rel="noopener">GitHub</a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <footer>Shivang Rohilla &middot; Delhi, India</footer>
+</main>
+
+<script>
+(function () {
+  // ---- sample log (simulated attacks) ----
+  var rows = [
+    ["fail", "02:30:10", "Failed password for root from 203.0.113.50"],
+    ["fail", "02:30:11", "Failed password for root from 203.0.113.50"],
+    ["fail", "02:30:12", "Failed password for root from 203.0.113.50"],
+    ["skip", "", "... 5 more failures for root, last at 02:30:17"],
+    ["alert", "high", "HIGH", "SSH brute force, root, 8 failures in 7 s  T1110.001"],
+    ["ok", "03:12:00", "Accepted publickey for alice from 10.0.0.99"],
+    ["alert", "low", "LOW", "Off-hours login, alice, 03:12  T1078"],
+    ["fail", "05:00:01", "Failed password for admin from 198.51.100.7"],
+    ["fail", "05:00:02", "Failed password for test from 198.51.100.7"],
+    ["fail", "05:00:03", "Failed password for oracle from 198.51.100.7"],
+    ["skip", "", "... 3 more usernames, last at 05:00:06"],
+    ["alert", "high", "HIGH", "Password spraying, 6 usernames  T1110.003"],
+    ["probe", "06:00:01", "Invalid user admin1 from 192.0.2.99"],
+    ["probe", "06:00:02", "Invalid user support from 192.0.2.99"],
+    ["skip", "", "... 4 more invalid users, last at 06:00:06"],
+    ["alert", "med", "MEDIUM", "Username enumeration, 6 invalid users  T1087.001"],
+    ["fail", "13:00:10", "Failed password for deploy from 203.0.113.77"],
+    ["skip", "", "... 5 more failures for deploy, last at 13:00:15"],
+    ["ok", "13:01:30", "Accepted password for deploy from 203.0.113.77"],
+    ["alert", "crit", "CRITICAL", "Login success after 6 failures, deploy  T1110.001 > T1078"]
+  ];
+  var logEl = document.getElementById("log");
+  var countsEl = document.getElementById("counts");
+  var timer = null;
+
+  function esc(s) { return s.replace(/&/g, "&amp;").replace(/</g, "&lt;"); }
+  function lineHtml(r) {
+    if (r[0] === "alert") return '<span class="ln alert ' + r[1] + '"><b>' + r[2] + '</b>  ' + esc(r[3]) + '</span>';
+    if (r[0] === "skip") return '<span class="ln skip">' + esc(r[2]) + '</span>';
+    return '<span class="ln ' + r[0] + '"><span class="ts">' + r[1] + '</span>  ' + esc(r[2]) + '</span>';
+  }
+  function render(n) {
+    var html = "", c = { crit: 0, high: 0, med: 0, low: 0 };
+    for (var i = 0; i < n; i++) {
+      html += lineHtml(rows[i]);
+      if (rows[i][0] === "alert") c[rows[i][1]]++;
+    }
+    logEl.innerHTML = html;
+    countsEl.innerHTML =
+      '<span class="t-crit"><b>' + c.crit + '</b> critical</span>' +
+      '<span class="t-high"><b>' + c.high + '</b> high</span>' +
+      '<span class="t-med"><b>' + c.med + '</b> medium</span>' +
+      '<span class="t-low"><b>' + c.low + '</b> low</span>';
+  }
+  function replay() {
+    if (timer) clearInterval(timer);
+    var reduce = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    if (reduce) { render(rows.length); return; }
+    var i = 0;
+    render(0);
+    timer = setInterval(function () {
+      i++;
+      render(i);
+      if (i >= rows.length) { clearInterval(timer); timer = null; }
+    }, 230);
+  }
+  render(rows.length); // complete at rest
+  document.getElementById("replay").addEventListener("click", replay);
+
+  // ---- theme toggle ----
+  var root = document.documentElement;
+  document.getElementById("theme").addEventListener("click", function () {
+    var cur = root.getAttribute("data-theme") ||
+      (window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light");
+    var next = cur === "dark" ? "light" : "dark";
+    root.setAttribute("data-theme", next);
+    try { localStorage.setItem("theme", next); } catch (e) {}
+  });
+  try { var saved = localStorage.getItem("theme"); if (saved) root.setAttribute("data-theme", saved); } catch (e) {}
+
+  // ---- copy email ----
+  var copyBtn = document.getElementById("copy");
+  copyBtn.addEventListener("click", function () {
+    var text = document.getElementById("email").textContent;
+    var done = function () { copyBtn.textContent = "Copied"; setTimeout(function () { copyBtn.textContent = "Copy"; }, 1600); };
+    var fallback = function () {
+      var r = document.createRange(); r.selectNodeContents(document.getElementById("email"));
+      var s = window.getSelection(); s.removeAllRanges(); s.addRange(r);
+      copyBtn.textContent = "Press Ctrl+C";
+    };
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      navigator.clipboard.writeText(text).then(done, fallback);
+    } else { fallback(); }
+  });
+})();
+</script>
+
+</body></html>
