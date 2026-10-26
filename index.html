@@ -169,10 +169,37 @@ footer { padding-block: 28px 36px; border-top: 1px solid var(--line); color: var
   .lede { font-size: 17px; }
 }
 @media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } }
+/* home soc lab: replay + diagram */
+.duo { display: grid; grid-template-columns: minmax(0, 1.15fr) minmax(0, 1fr); gap: 24px; margin: 8px 0 24px; align-items: start; }
+.duo .log { min-height: 330px; }
+.arch { background: var(--surface); border: 1px solid var(--line); border-radius: 10px; padding: 14px; }
+.arch svg { width: 100%; height: auto; display: block; }
+.arch .bx { fill: var(--surface-2); stroke: var(--line); stroke-width: 1.2; }
+.arch .bx.hl { stroke: var(--accent); }
+.arch .zone { fill: none; stroke: var(--muted); stroke-width: 1; stroke-dasharray: 5 4; }
+.arch text { fill: var(--fg); font-family: var(--body); font-size: 12.5px; }
+.arch text.m { fill: var(--muted); font-family: var(--mono); font-size: 10.5px; }
+.arch text.t { font-family: var(--mono); font-size: 11px; fill: var(--muted); letter-spacing: 0.06em; }
+.arch .ar { stroke: var(--accent); stroke-width: 1.6; fill: none; marker-end: url(#ah); }
+.arch .ah { fill: var(--accent); }
+.arch .fw { fill: none; stroke: var(--high); stroke-width: 1.4; }
+.arch .fwt { fill: var(--high); font-family: var(--mono); font-size: 10.5px; }
+@media (max-width: 860px) { .duo { grid-template-columns: minmax(0, 1fr); } }
+/* techy background: network graph canvas + dot grid + glow */
+#net { position: fixed; inset: 0; width: 100%; height: 100%; z-index: -1; pointer-events: none; }
+body::before { content: ""; position: fixed; inset: 0; z-index: -1; pointer-events: none;
+  background-image: radial-gradient(color-mix(in srgb, var(--muted) 38%, transparent) 1px, transparent 1.3px);
+  background-size: 26px 26px;
+  -webkit-mask-image: radial-gradient(ellipse 80% 70% at 50% 25%, #000 25%, transparent 85%);
+  mask-image: radial-gradient(ellipse 80% 70% at 50% 25%, #000 25%, transparent 85%); opacity: .55; }
+body::after { content: ""; position: fixed; inset: 0; z-index: -1; pointer-events: none;
+  background: radial-gradient(900px 480px at 82% -6%, color-mix(in srgb, var(--accent) 20%, transparent), transparent 70%),
+              radial-gradient(700px 420px at 4% 38%, color-mix(in srgb, var(--accent) 9%, transparent), transparent 70%); }
 </style>
 <style>:root{color-scheme:light}body{margin:0}</style>
 </head>
 <body>
+<canvas id="net" aria-hidden="true"></canvas>
 <header class="bar">
   <div class="wrap">
     <a class="brand" href="#top">Shivang Rohilla</a>
@@ -253,6 +280,73 @@ footer { padding-block: 28px 36px; border-top: 1px solid var(--line); color: var
 
     <div class="case" style="margin-top: 36px;">
       <div>
+        <h3>Home SOC Lab: Wazuh + FIM + NetAlertX + Grafana</h3>
+        <ul class="chips" aria-label="Stack">
+          <li>Wazuh 4.9.2</li><li>Grafana</li><li>NetAlertX</li><li>Docker</li><li>UFW</li><li>TLS</li><li>Kali Linux</li><li>Windows 10</li>
+        </ul>
+      </div>
+      <div>
+        <ul class="pts">
+          <li>Built a Wazuh SIEM on a Kali VM, enrolled a Windows 10 agent and turned on real-time File Integrity Monitoring. File <b>added, modified and deleted</b> events reach the dashboard within seconds.</li>
+          <li>Built a Grafana dashboard on the Wazuh indexer (Lucene queries, FIM events panel, Windows registry noise filtered out) and ran NetAlertX in Docker to inventory every device on the home network.</li>
+          <li>Hardened it like a real deployment: UFW default-deny with a single-IP allow-list, certificate re-signed with the right SAN so <b>TLS verification stays on</b>, a least-privilege read-only Grafana user, and Docker capabilities dropped.</li>
+          <li>Wrote an incident note for a FIM alert on a new binary, and documented the fixes for the problems I hit along the way (agent version mismatch, VPN vs LAN IP, certificate SAN errors).</li>
+        </ul>
+        <a class="btn" href="https://github.com/cybershivang/home-soc-lab" target="_blank" rel="noopener">See the lab on GitHub</a>
+      </div>
+    </div>
+    <div class="duo">
+      <div>
+        <div class="term">
+          <div class="term-head">
+            <span>wazuh alerts &middot; FIM events from my lab</span>
+            <button type="button" id="wreplay">&#9654; Replay</button>
+          </div>
+          <div class="log" id="wlog" role="log" aria-label="Wazuh file integrity monitoring alerts"></div>
+          <div class="term-foot" id="wcounts"></div>
+        </div>
+        <p class="note">Real file integrity events from my lab, shortened. One test file created, edited and deleted on the Windows laptop, plus a new binary on the Kali VM.</p>
+      </div>
+      <div class="arch">
+        <svg viewBox="0 0 520 330" role="img" aria-label="Architecture: Windows laptop with Wazuh agent and Grafana, sending to a Kali VM running Wazuh manager, indexer and NetAlertX, behind a UFW allow-list">
+          <defs><marker id="ah" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" class="ah"/></marker></defs>
+          <rect class="zone" x="6" y="22" width="190" height="298" rx="10"/>
+          <text class="t" x="16" y="16">WINDOWS LAPTOP</text>
+          <rect class="zone" x="258" y="22" width="256" height="298" rx="10"/>
+          <text class="t" x="268" y="16">KALI VM</text>
+          <rect class="bx hl" x="22" y="50" width="158" height="62" rx="8"/>
+          <text x="36" y="76">Wazuh agent</text><text class="m" x="36" y="96">real-time FIM</text>
+          <rect class="bx" x="22" y="238" width="158" height="62" rx="8"/>
+          <text x="36" y="264">Grafana</text><text class="m" x="36" y="284">dashboard :3000</text>
+          <rect class="bx hl" x="274" y="50" width="108" height="62" rx="8"/>
+          <text x="288" y="76">Manager</text><text class="m" x="288" y="96">rules, alerts</text>
+          <rect class="bx" x="396" y="50" width="104" height="62" rx="8"/>
+          <text x="410" y="76">Indexer</text><text class="m" x="410" y="96">TLS :9200</text>
+          <rect class="bx" x="274" y="238" width="226" height="62" rx="8"/>
+          <text x="288" y="264">NetAlertX (Docker)</text><text class="m" x="288" y="284">ARP scan, device inventory</text>
+          <path class="ar" d="M180 81 L270 81"/><text class="m" x="190" y="72">1514</text>
+          <path class="ar" d="M382 81 L392 81"/>
+          <path class="ar" d="M448 112 L448 206 L180 206 L120 206 L100 232"/>
+          <text class="m" x="272" y="198">9200 TLS, read-only user</text>
+          <path class="fw" d="M227 136 L227 190"/><text class="fwt" x="208" y="130">UFW</text>
+        </svg>
+      </div>
+    </div>
+
+    <div class="tbl-wrap" style="margin-bottom: 24px;">
+      <table>
+        <thead><tr><th>Level</th><th>Host</th><th>Path</th><th>What happened</th><th>Time</th><th>Rule</th></tr></thead>
+        <tbody>
+          <tr><td><span class="sev low">5 LOW</span></td><td class="mono">win-pc</td><td class="mono">...\wazuh-test\test.txt</td><td>File created in the monitored folder</td><td class="mono">21:49:48</td><td class="mono">554</td></tr>
+          <tr><td><span class="sev med">7 MEDIUM</span></td><td class="mono">win-pc</td><td class="mono">...\wazuh-test\test.txt</td><td>Checksum changed after the file was edited</td><td class="mono">21:49:58</td><td class="mono">550</td></tr>
+          <tr><td><span class="sev med">7 MEDIUM</span></td><td class="mono">win-pc</td><td class="mono">...\wazuh-test\test.txt</td><td>File deleted</td><td class="mono">21:50:08</td><td class="mono">553</td></tr>
+          <tr><td><span class="sev low">5 LOW</span></td><td class="mono">kali</td><td class="mono">/usr/sbin/ufw</td><td>New binary right after my own <code>apt install ufw</code>. Expected change, benign true positive.</td><td class="mono">21:43:20</td><td class="mono">554</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="case" style="margin-top: 36px;">
+      <div>
         <h3>Hydra Brute-Force Lab (TryHackMe)</h3>
         <ul class="chips" aria-label="Stack">
           <li>Kali Linux</li><li>THC-Hydra</li><li>HTTP POST Forms</li><li>OpenVPN</li>
@@ -267,23 +361,6 @@ footer { padding-block: 28px 36px; border-top: 1px solid var(--line); color: var
       </div>
     </div>
 
-    <div class="case" style="margin-top: 36px;">
-      <div>
-        <h3>Wazuh SIEM Home Lab</h3>
-        <ul class="chips" aria-label="Stack">
-          <li>Wazuh 4.9.2</li><li>Kali Linux</li><li>Windows 10</li><li>VMware</li><li>MITRE ATT&amp;CK</li><li>CIS Benchmark</li>
-        </ul>
-      </div>
-      <div>
-        <ul class="pts">
-          <li>Built a Wazuh server and dashboard on a Kali VM and enrolled a Windows 10 endpoint as an agent, sending events over TCP 1514 with AES encryption.</li>
-          <li>Ran a Security Configuration Assessment against the CIS Windows 10 benchmark and set up real-time File Integrity Monitoring on a test folder.</li>
-          <li>Fixed real setup problems along the way: VPN <b>tun0</b> IP used instead of the LAN IP, a broken agent install, an agent and manager version mismatch, and config edits blocked by missing admin rights.</li>
-          <li>Still in progress: brute-force detection from failed Windows logons (T1110) and FIM alerts mapped to T1565 and T1070.</li>
-        </ul>
-        <a class="btn" href="https://github.com/cybershivang/wazuh-siem-home-lab" target="_blank" rel="noopener">See the lab on GitHub</a>
-      </div>
-    </div>
   </section>
 
   <section class="block" id="experience">
@@ -315,14 +392,14 @@ footer { padding-block: 28px 36px; border-top: 1px solid var(--line); color: var
           <li>Incident escalation and reporting</li>
           <li>MITRE ATT&amp;CK mapping</li>
           <li>Incident response lifecycle, Cyber Kill Chain</li>
-          <li>Splunk, Wazuh SIEM</li>
+          <li>Splunk, Wazuh SIEM, File Integrity Monitoring</li>
         </ul>
       </div>
       <div>
         <h3>Systems and network</h3>
         <ul>
           <li>RHEL / CentOS, SELinux, LVM, NFS, Samba</li>
-          <li>SSH hardening, firewalls</li>
+          <li>SSH hardening, firewalls (UFW), TLS</li>
           <li>TCP/IP, DNS, DHCP, HTTP/HTTPS, VPN</li>
           <li>Bash, cron, SQL / MySQL</li>
         </ul>
@@ -330,7 +407,8 @@ footer { padding-block: 28px 36px; border-top: 1px solid var(--line); color: var
       <div>
         <h3>Tools</h3>
         <ul>
-          <li>Kali Linux</li>
+          <li>Kali Linux, Docker</li>
+          <li>Grafana, NetAlertX</li>
           <li>Wireshark</li>
           <li>Nessus, Nikto, Gobuster</li>
           <li>grep, cut, sort, uniq, regex</li>
@@ -435,6 +513,109 @@ footer { padding-block: 28px 36px; border-top: 1px solid var(--line); color: var
   }
   render(rows.length); // complete at rest
   document.getElementById("replay").addEventListener("click", replay);
+
+  // ---- home soc lab: wazuh FIM replay ----
+  (function () {
+    var rows = [
+      ["skip", "", "... many HKEY_LOCAL_MACHINE registry changes on win-pc, hidden by: NOT syscheck.path:HKEY*"],
+      ["ok", "21:43:20", "kali    added     /usr/sbin/ufw"],
+      ["alert", "low", "LEVEL 5", "New binary after my own apt install ufw. Benign.  rule 554"],
+      ["ok", "21:49:48", "win-pc  added     ...\\wazuh-test\\test.txt"],
+      ["alert", "low", "LEVEL 5", "File created in monitored folder  rule 554"],
+      ["probe", "21:49:58", "win-pc  modified  ...\\wazuh-test\\test.txt"],
+      ["alert", "med", "LEVEL 7", "Integrity checksum changed  rule 550"],
+      ["fail", "21:50:08", "win-pc  deleted   ...\\wazuh-test\\test.txt"],
+      ["alert", "med", "LEVEL 7", "File deleted  rule 553"]
+    ];
+    var logEl = document.getElementById("wlog"), countsEl = document.getElementById("wcounts"), timer = null;
+    function esc(s) { return s.replace(/&/g, "&amp;").replace(/</g, "&lt;"); }
+    function lineHtml(r) {
+      if (r[0] === "alert") return '<span class="ln alert ' + r[1] + '"><b>' + r[2] + '</b>  ' + esc(r[3]) + '</span>';
+      if (r[0] === "skip") return '<span class="ln skip">' + esc(r[2]) + '</span>';
+      return '<span class="ln ' + r[0] + '"><span class="ts">' + r[1] + '</span>  ' + esc(r[2]) + '</span>';
+    }
+    function render(n) {
+      var html = "", c = { ok: 0, probe: 0, fail: 0 };
+      for (var i = 0; i < n; i++) { html += lineHtml(rows[i]); if (c[rows[i][0]] !== undefined) c[rows[i][0]]++; }
+      logEl.innerHTML = html;
+      countsEl.innerHTML = '<span class="t-low"><b>' + c.ok + '</b> added</span><span class="t-med"><b>' + c.probe + '</b> modified</span><span class="t-crit"><b>' + c.fail + '</b> deleted</span>';
+    }
+    function replay() {
+      if (timer) clearInterval(timer);
+      var reduce = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+      if (reduce) { render(rows.length); return; }
+      var i = 0; render(0);
+      timer = setInterval(function () { i++; render(i); if (i >= rows.length) { clearInterval(timer); timer = null; } }, 420);
+    }
+    render(rows.length);
+    document.getElementById("wreplay").addEventListener("click", replay);
+  })();
+
+  // ---- background: slow network graph with an occasional alert pulse ----
+  (function () {
+    var cv = document.getElementById("net"); if (!cv || !cv.getContext) return;
+    var ctx = cv.getContext("2d"), W = 0, H = 0, dpr = 1, nodes = [], pk = [], pulses = [], raf = 0, frame = 0, col = {};
+    var reduce = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    function colors() {
+      var cs = getComputedStyle(document.documentElement);
+      var dark = (document.documentElement.getAttribute("data-theme") || (window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light")) === "dark";
+      col = { acc: cs.getPropertyValue("--accent").trim() || "#1B5BD1", hi: cs.getPropertyValue("--high").trim() || "#CC4A0B", line: dark ? 0.42 : 0.34, node: dark ? 0.75 : 0.6 };
+    }
+    function size() {
+      dpr = Math.min(window.devicePixelRatio || 1, 2); W = window.innerWidth; H = window.innerHeight;
+      cv.width = W * dpr; cv.height = H * dpr; ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+      var n = Math.max(18, Math.min(62, Math.round(W * H / 19000))); nodes = [];
+      for (var i = 0; i < n; i++) nodes.push({ x: Math.random() * W, y: Math.random() * H, vx: (Math.random() - .5) * .18, vy: (Math.random() - .5) * .18, r: 1.4 + Math.random() * 1.4 });
+      pk = []; pulses = [];
+    }
+    function links() {
+      var L = [], D = Math.min(200, Math.max(120, W / 6));
+      for (var i = 0; i < nodes.length; i++) for (var j = i + 1; j < nodes.length; j++) {
+        var dx = nodes[i].x - nodes[j].x, dy = nodes[i].y - nodes[j].y, d = Math.sqrt(dx * dx + dy * dy);
+        if (d < D) L.push([i, j, 1 - d / D]);
+      }
+      return L;
+    }
+    function draw(step) {
+      if (frame % 90 === 0) colors();
+      ctx.clearRect(0, 0, W, H);
+      var L = links();
+      ctx.lineWidth = 1; ctx.strokeStyle = col.acc;
+      for (var k = 0; k < L.length; k++) {
+        var a = nodes[L[k][0]], b = nodes[L[k][1]];
+        ctx.globalAlpha = L[k][2] * col.line; ctx.beginPath(); ctx.moveTo(a.x, a.y); ctx.lineTo(b.x, b.y); ctx.stroke();
+      }
+      ctx.fillStyle = col.acc; ctx.globalAlpha = col.node;
+      for (var i = 0; i < nodes.length; i++) {
+        var n = nodes[i]; ctx.beginPath(); ctx.arc(n.x, n.y, n.r, 0, 6.2832); ctx.fill();
+        if (step) { n.x += n.vx; n.y += n.vy; if (n.x < -20 || n.x > W + 20) n.vx *= -1; if (n.y < -20 || n.y > H + 20) n.vy *= -1; }
+      }
+      if (step) {
+        if (L.length && frame % 70 === 0 && pk.length < 7) { var l = L[Math.floor(Math.random() * L.length)]; pk.push({ a: l[0], b: l[1], t: 0 }); }
+        if (frame % 520 === 260 && nodes.length) pulses.push({ i: Math.floor(Math.random() * nodes.length), t: 0 });
+      }
+      for (var p = pk.length - 1; p >= 0; p--) {
+        var q = pk[p], A = nodes[q.a], B = nodes[q.b]; if (step) q.t += 0.014;
+        if (q.t >= 1) { pk.splice(p, 1); continue; }
+        ctx.globalAlpha = 0.85; ctx.fillStyle = col.acc; ctx.beginPath(); ctx.arc(A.x + (B.x - A.x) * q.t, A.y + (B.y - A.y) * q.t, 2, 0, 6.2832); ctx.fill();
+      }
+      for (var m = pulses.length - 1; m >= 0; m--) {
+        var u = pulses[m], N = nodes[u.i]; if (step) u.t += 0.008;
+        if (u.t >= 1) { pulses.splice(m, 1); continue; }
+        ctx.globalAlpha = (1 - u.t) * 0.7; ctx.strokeStyle = col.hi; ctx.lineWidth = 1.5;
+        ctx.beginPath(); ctx.arc(N.x, N.y, 4 + u.t * 34, 0, 6.2832); ctx.stroke();
+        ctx.globalAlpha = 0.9; ctx.fillStyle = col.hi; ctx.beginPath(); ctx.arc(N.x, N.y, 2.6, 0, 6.2832); ctx.fill(); ctx.strokeStyle = col.acc; ctx.lineWidth = 1;
+      }
+      ctx.globalAlpha = 1;
+    }
+    function loop() { frame++; draw(true); raf = requestAnimationFrame(loop); }
+    function start() { if (raf || reduce) return; raf = requestAnimationFrame(loop); }
+    function stop() { if (raf) cancelAnimationFrame(raf); raf = 0; }
+    colors(); size(); draw(false); start();
+    var rt; window.addEventListener("resize", function () { clearTimeout(rt); rt = setTimeout(function () { size(); draw(false); }, 150); });
+    document.addEventListener("visibilitychange", function () { document.hidden ? stop() : start(); });
+    document.getElementById("theme").addEventListener("click", function () { setTimeout(function () { colors(); if (reduce) draw(false); }, 30); });
+  })();
 
   // ---- theme toggle ----
   var root = document.documentElement;
