@@ -4,7 +4,15 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="description" content="Shivang Rohilla, SOC Analyst (L1) candidate. SSH log analysis, incident reporting, Linux security.">
-<title>Shivang Rohilla</title>
+<title>Shivang Rohilla | SOC Analyst (L1)</title>
+<meta property="og:type" content="website">
+<meta property="og:title" content="Shivang Rohilla | SOC Analyst (L1)">
+<meta property="og:description" content="Reads logs, names the attack, writes it up. SSH log analysis and a live Wazuh home lab.">
+<meta property="og:url" content="https://cybershivang.github.io/">
+<meta property="og:image" content="https://cybershivang.github.io/og-image.png">
+<meta property="og:image:width" content="1200"><meta property="og:image:height" content="630">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="https://cybershivang.github.io/og-image.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700;12..96,800&family=Instrument+Sans:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap">
@@ -49,6 +57,7 @@
 * { box-sizing: border-box; }
 html { scroll-behavior: smooth; }
 body {
+  margin: 0;
   background: var(--bg); color: var(--fg);
   font-family: var(--body); font-size: 16px; line-height: 1.6;
   padding-inline: 20px; padding-block: 0;
@@ -58,14 +67,21 @@ a { color: inherit; }
 :focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; border-radius: 4px; }
 .wrap { max-width: 1080px; margin-inline: auto; }
 section { scroll-margin-top: 72px; }
+html, body { overflow-x: clip; }
+svg, img, canvas { max-width: 100%; }
 
 /* top bar */
 .bar { position: sticky; top: env(safe-area-inset-top, 0px); z-index: 10; background: color-mix(in srgb, var(--bg) 88%, transparent); backdrop-filter: blur(10px); border-bottom: 1px solid var(--line); margin-inline: -20px; padding-inline: 20px; }
 .bar .wrap { display: flex; align-items: center; justify-content: space-between; gap: 16px; height: 56px; }
 .brand { font-family: var(--display); font-weight: 700; font-size: 17px; text-decoration: none; letter-spacing: -0.01em; }
+.navwrap { display: flex; align-items: center; gap: 22px; }
 .nav { display: flex; align-items: center; gap: 22px; font-size: 14px; }
 .nav a { text-decoration: none; color: var(--muted); }
 .nav a:hover { color: var(--fg); }
+.nav a { position: relative; transition: color .25s; }
+.nav a::after { content: ""; position: absolute; left: 0; right: 0; bottom: -4px; height: 2px; border-radius: 2px; background: var(--accent); transform: scaleX(0); transition: transform .3s ease; }
+.nav a.on { color: var(--fg); }
+.nav a.on::after { transform: scaleX(1); }
 .toggle { font: inherit; font-size: 13px; color: var(--fg); background: transparent; border: 1px solid var(--line); border-radius: 999px; padding: 4px 12px; cursor: pointer; }
 .toggle:hover { border-color: var(--muted); }
 
@@ -86,8 +102,9 @@ h1 { font-family: var(--display); font-weight: 800; font-size: clamp(44px, 7vw, 
 .term-head { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 10px 14px; border-bottom: 1px solid #1B2540; font-family: var(--mono); font-size: 12px; color: var(--term-dim); }
 .term-head button { font: inherit; color: var(--term-fg); background: #131C33; border: 1px solid #26335A; border-radius: 6px; padding: 3px 10px; cursor: pointer; }
 .term-head button:hover { background: #1A2547; }
-.log { font-family: var(--mono); font-size: 12.5px; line-height: 1.7; padding: 14px; margin: 0; min-height: 392px; }
-.ln { display: block; white-space: pre-wrap; overflow-wrap: anywhere; padding-left: 10px; border-left: 2px solid transparent; }
+.log { font-family: var(--mono); font-size: 12.5px; line-height: 1.7; padding: 14px; margin: 0; height: 400px; overflow-y: auto; scrollbar-width: thin; scrollbar-color: #26335A transparent; }
+.ln { display: block; white-space: pre-wrap; overflow-wrap: anywhere; padding-left: 10px; border-left: 2px solid transparent; animation: lnIn .28s ease-out both; }
+@keyframes lnIn { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: none; } }
 .ln .ts { color: var(--term-dim); }
 .ln.fail { color: var(--term-fail); }
 .ln.ok { color: var(--term-ok); }
@@ -139,9 +156,9 @@ td.mono { font-family: var(--mono); font-size: 12.5px; white-space: nowrap; }
 .role li { margin-bottom: 8px; }
 .cols { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 36px; }
 .cols h3 { font-family: var(--display); font-size: 18px; margin: 0 0 12px; }
-.cols ul { list-style: none; margin: 0; padding: 0; }
-.cols li { padding: 7px 0; border-bottom: 1px solid var(--line); font-size: 15px; }
-.cols li:last-child { border-bottom: 0; }
+.cols ul { list-style: none; margin: 0; padding: 0; display: flex; flex-wrap: wrap; gap: 8px; }
+.cols li { font-family: var(--mono); font-size: 12.5px; line-height: 1.45; padding: 5px 12px; border: 1px solid var(--line); border-radius: 14px; color: var(--muted); background: var(--surface); transition: color .35s, border-color .35s, background .35s, transform .35s, box-shadow .35s; }
+.cols li.lit { color: var(--accent); border-color: var(--accent); background: color-mix(in srgb, var(--accent) 12%, var(--surface)); transform: translateY(-2px); box-shadow: 0 8px 18px -10px var(--accent); }
 .two { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 36px; }
 .item { margin-bottom: 18px; }
 .item b { display: block; font-weight: 600; }
@@ -164,14 +181,52 @@ footer { padding-block: 28px 36px; border-top: 1px solid var(--line); color: var
   .role { grid-template-columns: minmax(0, 1fr); gap: 6px; }
 }
 @media (max-width: 640px) {
-  .nav a { display: none; }
-  .log { min-height: 0; font-size: 12px; }
+  section { scroll-margin-top: 92px; }
+  .bar .wrap { flex-wrap: wrap; height: auto; row-gap: 0; padding-block: 8px 0; }
+  .brand { font-size: 16px; line-height: 32px; }
+  .navwrap { display: contents; }
+  .toggle { order: 2; padding: 6px 14px; }
+  .nav { order: 3; flex: 1 0 100%; gap: 22px; overflow-x: auto; white-space: nowrap; scrollbar-width: none; padding-block: 8px 10px; margin-inline: -2px; }
+  .nav::-webkit-scrollbar { display: none; }
+  .nav a { padding: 4px 2px; }
+  .log { font-size: 12px; height: 340px; padding: 12px; }
+  .duo .log { height: 300px; }
   .lede { font-size: 17px; }
+  .hero { padding-block: 24px 28px; gap: 24px; }
+  .hero .log { height: 250px; }
+  .hero h1 { margin-bottom: 16px; }
+  .hero .lede { margin-bottom: 20px; }
+  .cta .hm { display: none; }
+  .nav a::after { bottom: 0; }
+  .block { padding-block: 40px; }
+  .cta .btn { flex: 1 1 auto; justify-content: center; }
+  .term-head { flex-wrap: wrap; }
+  .term-head button { padding: 6px 12px; }
+  .now { grid-template-columns: minmax(0, 1fr); }
+  /* tables become stacked cards */
+  .tbl-wrap { overflow: visible; border: 0; background: transparent; }
+  table, tbody { display: block; min-width: 0; }
+  thead { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); }
+  tr { display: block; background: var(--surface); border: 1px solid var(--line); border-radius: 10px; margin-bottom: 12px; padding: 6px 0; }
+  tr:last-child td { border-bottom: 0; }
+  tbody tr.lit { background: var(--surface); border-color: var(--accent); box-shadow: 0 0 0 1px var(--accent), 0 14px 28px -18px var(--accent); }
+  td { display: grid; grid-template-columns: 84px minmax(0, 1fr); gap: 10px; align-items: baseline; padding: 6px 14px; border-bottom: 0; }
+  td::before { content: attr(data-label); font-family: var(--mono); font-size: 11px; letter-spacing: 0.06em; text-transform: uppercase; color: var(--muted); }
+  td.mono { white-space: normal; overflow-wrap: anywhere; }
+  .sev { justify-self: start; }
+  /* diagram text stays readable when the svg shrinks */
+  .arch { padding: 8px; }
+  .arch text { font-size: 15.5px; }
+  .arch text.m { font-size: 12.5px; }
+  .arch text.t { font-size: 12.5px; }
+  .arch text.fwt { font-size: 12.5px; }
+  .arch .pk text { font-size: 14px; }
 }
-@media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } }
+@media (max-width: 380px) { body { padding-inline: 14px; } .bar { margin-inline: -14px; padding-inline: 14px; } }
+@media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } .badge .dot, .live .dot { animation: none; } }
 /* home soc lab: replay + diagram */
 .duo { display: grid; grid-template-columns: minmax(0, 1.15fr) minmax(0, 1fr); gap: 24px; margin: 8px 0 24px; align-items: start; }
-.duo .log { min-height: 330px; }
+.duo .log { height: 330px; }
 .arch { background: var(--surface); border: 1px solid var(--line); border-radius: 10px; padding: 14px; }
 .arch svg { width: 100%; height: auto; display: block; }
 .arch .bx { fill: var(--surface-2); stroke: var(--line); stroke-width: 1.2; }
@@ -184,6 +239,32 @@ footer { padding-block: 28px 36px; border-top: 1px solid var(--line); color: var
 .arch .ah { fill: var(--accent); }
 .arch .fw { fill: none; stroke: var(--high); stroke-width: 1.4; }
 .arch .fwt { fill: var(--high); font-family: var(--mono); font-size: 10.5px; }
+.arch .bx { transition: fill .25s ease, stroke .25s ease, stroke-width .25s ease; }
+.arch .bx.on { stroke: var(--accent); stroke-width: 2.4; fill: color-mix(in srgb, var(--accent) 22%, var(--surface-2)); }
+.arch .pk { opacity: 0; pointer-events: none; }
+.arch .pk rect { fill: var(--accent); }
+.arch .pk text { fill: var(--accent-ink); font-family: var(--mono); font-size: 10px; font-weight: 500; text-anchor: middle; dominant-baseline: central; }
+.badge { display: inline-flex; align-items: center; gap: 8px; font-family: var(--mono); font-size: 12px; padding: 4px 12px; border: 1px solid var(--line); border-radius: 999px; color: var(--muted); margin: 0 0 16px; background: var(--surface); }
+.badge .dot { width: 8px; height: 8px; border-radius: 50%; background: var(--low); animation: dotp 1.8s infinite; }
+@keyframes dotp { 0% { box-shadow: 0 0 0 0 color-mix(in srgb, var(--low) 60%, transparent); } 70%, 100% { box-shadow: 0 0 0 8px transparent; } }
+.live { display: inline-flex; align-items: center; gap: 7px; font-family: var(--mono); font-size: 11.5px; color: var(--term-dim); }
+.live .dot { width: 7px; height: 7px; border-radius: 50%; background: var(--term-ok); animation: dotp 1.8s infinite; }
+.chips li { transition: color .35s, border-color .35s, background .35s, transform .35s, box-shadow .35s; }
+.chips li.lit { color: var(--accent); border-color: var(--accent); background: color-mix(in srgb, var(--accent) 12%, transparent); transform: translateY(-2px); box-shadow: 0 8px 18px -10px var(--accent); }
+tbody tr { transition: background .4s, box-shadow .4s, border-color .4s; }
+tbody tr.lit { background: color-mix(in srgb, var(--accent) 9%, transparent); box-shadow: inset 3px 0 0 var(--accent); }
+tr.lit .sev { background: color-mix(in srgb, currentColor 14%, transparent); }
+.ln.go { cursor: pointer; border-radius: 3px; }
+.ln.go:hover { background: rgba(255, 255, 255, .06); }
+.ln.sel { background: rgba(255, 255, 255, .1); border-left-color: var(--accent); }
+.arch .detail { margin-top: 12px; border: 1px dashed var(--line); border-radius: 10px; padding: 12px 14px; font-size: 14px; min-height: 120px; }
+.arch .detail h4 { margin: 0 0 6px; font-size: 14px; }
+.arch .detail dl { margin: 0; display: grid; grid-template-columns: 84px minmax(0, 1fr); gap: 4px 10px; }
+.arch .detail dt { font-family: var(--mono); font-size: 11.5px; text-transform: uppercase; color: var(--muted); padding-top: 2px; }
+.arch .detail dd { margin: 0; }
+.arch .detail .dim { color: var(--muted); }
+.arch .step { margin: 10px 2px 0; min-height: 3.2em; font-family: var(--mono); font-size: 12px; line-height: 1.5; color: var(--muted); }
+.arch .step b { color: var(--accent); font-weight: 500; }
 @media (max-width: 860px) { .duo { grid-template-columns: minmax(0, 1fr); } }
 /* techy background: network graph canvas + dot grid + glow */
 #net { position: fixed; inset: 0; width: 100%; height: 100%; z-index: -1; pointer-events: none; }
@@ -203,26 +284,30 @@ body::after { content: ""; position: fixed; inset: 0; z-index: -1; pointer-event
 <header class="bar">
   <div class="wrap">
     <a class="brand" href="#top">Shivang Rohilla</a>
-    <nav class="nav" aria-label="Sections">
-      <a href="#project">Project</a>
-      <a href="#experience">Experience</a>
-      <a href="#skills">Skills</a>
-      <a href="#contact">Contact</a>
+    <div class="navwrap">
+      <nav class="nav" aria-label="Sections">
+        <a href="#project">Project</a>
+        <a href="#experience">Experience</a>
+        <a href="#skills">Skills</a>
+        <a href="#contact">Contact</a>
+      </nav>
       <button class="toggle" id="theme" type="button" aria-label="Switch colour theme">Theme</button>
-    </nav>
+    </div>
   </div>
 </header>
 
 <main class="wrap" id="top">
   <section class="hero">
     <div>
+      <span class="badge"><i class="dot"></i>Open to SOC L1 roles &middot; rotational 24x7 shifts</span>
       <p class="eyebrow">SOC Analyst (L1) candidate &middot; Delhi, India</p>
       <h1>Shivang Rohilla</h1>
       <p class="lede">Entry-level SOC analyst. <b>I read authentication logs, name the attack pattern, rate it and write it up</b> so the next person knows what to do.</p>
       <div class="cta">
-        <a class="btn primary" href="https://github.com/rajputshivang2004-prog/ssh-log-analysis-lab" target="_blank" rel="noopener">See the SSH log lab</a>
+        <a class="btn primary" href="Shivang_Rohilla_SOC_Resume.pdf" download>&#8595; Download resume</a>
+        <a class="btn" href="https://github.com/rajputshivang2004-prog/ssh-log-analysis-lab" target="_blank" rel="noopener">See the SSH log lab</a>
         <a class="btn" href="https://www.linkedin.com/in/cybershivang/" target="_blank" rel="noopener">LinkedIn</a>
-        <a class="btn" href="#contact">Get in touch</a>
+        <a class="btn hm" href="#contact">Get in touch</a>
       </div>
     </div>
 
@@ -230,7 +315,7 @@ body::after { content: ""; position: fixed; inset: 0; z-index: -1; pointer-event
       <div class="term">
         <div class="term-head">
           <span>auth.log &middot; sample, simulated attacks</span>
-          <button type="button" id="replay">&#9654; Replay</button>
+          <span class="live"><i class="dot"></i>live</span>
         </div>
         <div class="log" id="log" role="log" aria-label="SSH authentication log with detections"></div>
         <div class="term-foot" id="counts"></div>
@@ -263,11 +348,11 @@ body::after { content: ""; position: fixed; inset: 0; z-index: -1; pointer-event
       <table>
         <thead><tr><th>Severity</th><th>Source IP</th><th>Target</th><th>What happened</th><th>Window</th><th>MITRE</th></tr></thead>
         <tbody>
-          <tr><td><span class="sev crit">CRITICAL</span></td><td class="mono">203.0.113.77</td><td>deploy</td><td>6 failed logins, then a successful one from the same IP</td><td class="mono">13:00:10 to 13:01:30</td><td class="mono">T1110.001, T1078</td></tr>
-          <tr><td><span class="sev high">HIGH</span></td><td class="mono">203.0.113.50</td><td>root</td><td>8 failed logins on one account</td><td class="mono">02:30:10 to 02:30:17</td><td class="mono">T1110.001</td></tr>
-          <tr><td><span class="sev high">HIGH</span></td><td class="mono">198.51.100.7</td><td>6 accounts</td><td>One attempt each on admin, test, oracle, ubuntu, git, ftp</td><td class="mono">05:00:01 to 05:00:06</td><td class="mono">T1110.003</td></tr>
-          <tr><td><span class="sev med">MEDIUM</span></td><td class="mono">192.0.2.99</td><td>6 invalid users</td><td>Probing for usernames that do not exist</td><td class="mono">06:00:01 to 06:00:06</td><td class="mono">T1087.001</td></tr>
-          <tr><td><span class="sev low">LOW</span></td><td class="mono">10.0.0.99</td><td>alice</td><td>Key login outside working hours, no failures before it</td><td class="mono">03:12:00</td><td class="mono">T1078</td></tr>
+          <tr><td data-label="Severity"><span class="sev crit">CRITICAL</span></td><td class="mono" data-label="Source IP">203.0.113.77</td><td data-label="Target">deploy</td><td data-label="What happened">6 failed logins, then a successful one from the same IP</td><td class="mono" data-label="Window">13:00:10 to 13:01:30</td><td class="mono" data-label="MITRE">T1110.001, T1078</td></tr>
+          <tr><td data-label="Severity"><span class="sev high">HIGH</span></td><td class="mono" data-label="Source IP">203.0.113.50</td><td data-label="Target">root</td><td data-label="What happened">8 failed logins on one account</td><td class="mono" data-label="Window">02:30:10 to 02:30:17</td><td class="mono" data-label="MITRE">T1110.001</td></tr>
+          <tr><td data-label="Severity"><span class="sev high">HIGH</span></td><td class="mono" data-label="Source IP">198.51.100.7</td><td data-label="Target">6 accounts</td><td data-label="What happened">One attempt each on admin, test, oracle, ubuntu, git, ftp</td><td class="mono" data-label="Window">05:00:01 to 05:00:06</td><td class="mono" data-label="MITRE">T1110.003</td></tr>
+          <tr><td data-label="Severity"><span class="sev med">MEDIUM</span></td><td class="mono" data-label="Source IP">192.0.2.99</td><td data-label="Target">6 invalid users</td><td data-label="What happened">Probing for usernames that do not exist</td><td class="mono" data-label="Window">06:00:01 to 06:00:06</td><td class="mono" data-label="MITRE">T1087.001</td></tr>
+          <tr><td data-label="Severity"><span class="sev low">LOW</span></td><td class="mono" data-label="Source IP">10.0.0.99</td><td data-label="Target">alice</td><td data-label="What happened">Key login outside working hours, no failures before it</td><td class="mono" data-label="Window">03:12:00</td><td class="mono" data-label="MITRE">T1078</td></tr>
         </tbody>
       </table>
     </div>
@@ -300,27 +385,27 @@ body::after { content: ""; position: fixed; inset: 0; z-index: -1; pointer-event
         <div class="term">
           <div class="term-head">
             <span>wazuh alerts &middot; FIM events from my lab</span>
-            <button type="button" id="wreplay">&#9654; Replay</button>
+            <span class="live"><i class="dot"></i>live</span>
           </div>
           <div class="log" id="wlog" role="log" aria-label="Wazuh file integrity monitoring alerts"></div>
           <div class="term-foot" id="wcounts"></div>
         </div>
-        <p class="note">Real file integrity events from my lab, shortened. One test file created, edited and deleted on the Windows laptop, plus a new binary on the Kali VM.</p>
+        <p class="note">Real file integrity events from my lab, shortened. Click any line to see what it means.</p>
       </div>
       <div class="arch">
-        <svg viewBox="0 0 520 330" role="img" aria-label="Architecture: Windows laptop with Wazuh agent and Grafana, sending to a Kali VM running Wazuh manager, indexer and NetAlertX, behind a UFW allow-list">
+        <svg id="flow" viewBox="0 0 520 330" role="img" aria-label="Architecture: Windows laptop with Wazuh agent and Grafana, sending to a Kali VM running Wazuh manager, indexer and NetAlertX, behind a UFW allow-list">
           <defs><marker id="ah" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" class="ah"/></marker></defs>
           <rect class="zone" x="6" y="22" width="190" height="298" rx="10"/>
           <text class="t" x="16" y="16">WINDOWS LAPTOP</text>
           <rect class="zone" x="258" y="22" width="256" height="298" rx="10"/>
           <text class="t" x="268" y="16">KALI VM</text>
-          <rect class="bx hl" x="22" y="50" width="158" height="62" rx="8"/>
+          <rect class="bx hl" data-n="agent" x="22" y="50" width="158" height="62" rx="8"/>
           <text x="36" y="76">Wazuh agent</text><text class="m" x="36" y="96">real-time FIM</text>
-          <rect class="bx" x="22" y="238" width="158" height="62" rx="8"/>
+          <rect class="bx" data-n="graf" x="22" y="238" width="158" height="62" rx="8"/>
           <text x="36" y="264">Grafana</text><text class="m" x="36" y="284">dashboard :3000</text>
-          <rect class="bx hl" x="274" y="50" width="108" height="62" rx="8"/>
+          <rect class="bx hl" data-n="mgr" x="274" y="50" width="108" height="62" rx="8"/>
           <text x="288" y="76">Manager</text><text class="m" x="288" y="96">rules, alerts</text>
-          <rect class="bx" x="396" y="50" width="104" height="62" rx="8"/>
+          <rect class="bx" data-n="idx" x="396" y="50" width="104" height="62" rx="8"/>
           <text x="410" y="76">Indexer</text><text class="m" x="410" y="96">TLS :9200</text>
           <rect class="bx" x="274" y="238" width="226" height="62" rx="8"/>
           <text x="288" y="264">NetAlertX (Docker)</text><text class="m" x="288" y="284">ARP scan, device inventory</text>
@@ -329,7 +414,10 @@ body::after { content: ""; position: fixed; inset: 0; z-index: -1; pointer-event
           <path class="ar" d="M448 112 L448 206 L180 206 L120 206 L100 232"/>
           <text class="m" x="272" y="198">9200 TLS, read-only user</text>
           <path class="fw" d="M227 136 L227 190"/><text class="fwt" x="208" y="130">UFW</text>
+          <g class="pk" id="pkt"><rect x="-20" y="-9" width="40" height="18" rx="4"/><text>FIM</text></g>
         </svg>
+        <p class="step" id="flowStep" aria-live="off"></p>
+        <div class="detail" id="detail"></div>
       </div>
     </div>
 
@@ -337,10 +425,10 @@ body::after { content: ""; position: fixed; inset: 0; z-index: -1; pointer-event
       <table>
         <thead><tr><th>Level</th><th>Host</th><th>Path</th><th>What happened</th><th>Time</th><th>Rule</th></tr></thead>
         <tbody>
-          <tr><td><span class="sev low">5 LOW</span></td><td class="mono">win-pc</td><td class="mono">...\wazuh-test\test.txt</td><td>File created in the monitored folder</td><td class="mono">21:49:48</td><td class="mono">554</td></tr>
-          <tr><td><span class="sev med">7 MEDIUM</span></td><td class="mono">win-pc</td><td class="mono">...\wazuh-test\test.txt</td><td>Checksum changed after the file was edited</td><td class="mono">21:49:58</td><td class="mono">550</td></tr>
-          <tr><td><span class="sev med">7 MEDIUM</span></td><td class="mono">win-pc</td><td class="mono">...\wazuh-test\test.txt</td><td>File deleted</td><td class="mono">21:50:08</td><td class="mono">553</td></tr>
-          <tr><td><span class="sev low">5 LOW</span></td><td class="mono">kali</td><td class="mono">/usr/sbin/ufw</td><td>New binary right after my own <code>apt install ufw</code>. Expected change, benign true positive.</td><td class="mono">21:43:20</td><td class="mono">554</td></tr>
+          <tr><td data-label="Level"><span class="sev low">5 LOW</span></td><td class="mono" data-label="Host">win-pc</td><td class="mono" data-label="Path">...\wazuh-test\test.txt</td><td data-label="What happened">File created in the monitored folder</td><td class="mono" data-label="Time">21:49:48</td><td class="mono" data-label="Rule">554</td></tr>
+          <tr><td data-label="Level"><span class="sev med">7 MEDIUM</span></td><td class="mono" data-label="Host">win-pc</td><td class="mono" data-label="Path">...\wazuh-test\test.txt</td><td data-label="What happened">Checksum changed after the file was edited</td><td class="mono" data-label="Time">21:49:58</td><td class="mono" data-label="Rule">550</td></tr>
+          <tr><td data-label="Level"><span class="sev med">7 MEDIUM</span></td><td class="mono" data-label="Host">win-pc</td><td class="mono" data-label="Path">...\wazuh-test\test.txt</td><td data-label="What happened">File deleted</td><td class="mono" data-label="Time">21:50:08</td><td class="mono" data-label="Rule">553</td></tr>
+          <tr><td data-label="Level"><span class="sev low">5 LOW</span></td><td class="mono" data-label="Host">kali</td><td class="mono" data-label="Path">/usr/sbin/ufw</td><td data-label="What happened">New binary right after my own <code>apt install ufw</code>. Expected change, benign true positive.</td><td class="mono" data-label="Time">21:43:20</td><td class="mono" data-label="Rule">554</td></tr>
         </tbody>
       </table>
     </div>
@@ -441,6 +529,7 @@ body::after { content: ""; position: fixed; inset: 0; z-index: -1; pointer-event
       <div>
         <div class="mail"><code id="email">rajputshivang2004@gmail.com</code><button type="button" id="copy">Copy</button></div>
         <div class="cta">
+          <a class="btn primary" href="Shivang_Rohilla_SOC_Resume.pdf" download>&#8595; Download resume</a>
           <a class="btn" href="https://www.linkedin.com/in/cybershivang/" target="_blank" rel="noopener">LinkedIn</a>
           <a class="btn" href="https://github.com/rajputshivang2004-prog" target="_blank" rel="noopener">GitHub</a>
         </div>
@@ -453,102 +542,244 @@ body::after { content: ""; position: fixed; inset: 0; z-index: -1; pointer-event
 
 <script>
 (function () {
-  // ---- sample log (simulated attacks) ----
-  var rows = [
-    ["fail", "02:30:10", "Failed password for root from 203.0.113.50"],
-    ["fail", "02:30:11", "Failed password for root from 203.0.113.50"],
-    ["fail", "02:30:12", "Failed password for root from 203.0.113.50"],
-    ["skip", "", "... 5 more failures for root, last at 02:30:17"],
-    ["alert", "high", "HIGH", "SSH brute force, root, 8 failures in 7 s  T1110.001"],
-    ["ok", "03:12:00", "Accepted publickey for alice from 10.0.0.99"],
-    ["alert", "low", "LOW", "Off-hours login, alice, 03:12  T1078"],
-    ["fail", "05:00:01", "Failed password for admin from 198.51.100.7"],
-    ["fail", "05:00:02", "Failed password for test from 198.51.100.7"],
-    ["fail", "05:00:03", "Failed password for oracle from 198.51.100.7"],
-    ["skip", "", "... 3 more usernames, last at 05:00:06"],
-    ["alert", "high", "HIGH", "Password spraying, 6 usernames  T1110.003"],
-    ["probe", "06:00:01", "Invalid user admin1 from 192.0.2.99"],
-    ["probe", "06:00:02", "Invalid user support from 192.0.2.99"],
-    ["skip", "", "... 4 more invalid users, last at 06:00:06"],
-    ["alert", "med", "MEDIUM", "Username enumeration, 6 invalid users  T1087.001"],
-    ["fail", "13:00:10", "Failed password for deploy from 203.0.113.77"],
-    ["skip", "", "... 5 more failures for deploy, last at 13:00:15"],
-    ["ok", "13:01:30", "Accepted password for deploy from 203.0.113.77"],
-    ["alert", "crit", "CRITICAL", "Login success after 6 failures, deploy  T1110.001 > T1078"]
-  ];
-  var logEl = document.getElementById("log");
-  var countsEl = document.getElementById("counts");
-  var timer = null;
-
+  // ---- shared helpers ----
+  var reduceMotion = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
   function esc(s) { return s.replace(/&/g, "&amp;").replace(/</g, "&lt;"); }
   function lineHtml(r) {
     if (r[0] === "alert") return '<span class="ln alert ' + r[1] + '"><b>' + r[2] + '</b>  ' + esc(r[3]) + '</span>';
     if (r[0] === "skip") return '<span class="ln skip">' + esc(r[2]) + '</span>';
     return '<span class="ln ' + r[0] + '"><span class="ts">' + r[1] + '</span>  ' + esc(r[2]) + '</span>';
   }
-  function render(n) {
-    var html = "", c = { crit: 0, high: 0, med: 0, low: 0 };
-    for (var i = 0; i < n; i++) {
-      html += lineHtml(rows[i]);
-      if (rows[i][0] === "alert") c[rows[i][1]]++;
-    }
-    logEl.innerHTML = html;
-    countsEl.innerHTML =
-      '<span class="t-crit"><b>' + c.crit + '</b> critical</span>' +
-      '<span class="t-high"><b>' + c.high + '</b> high</span>' +
-      '<span class="t-med"><b>' + c.med + '</b> medium</span>' +
-      '<span class="t-low"><b>' + c.low + '</b> low</span>';
-  }
-  function replay() {
-    if (timer) clearInterval(timer);
-    var reduce = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-    if (reduce) { render(rows.length); return; }
-    var i = 0;
-    render(0);
-    timer = setInterval(function () {
-      i++;
-      render(i);
-      if (i >= rows.length) { clearInterval(timer); timer = null; }
-    }, 230);
-  }
-  render(rows.length); // complete at rest
-  document.getElementById("replay").addEventListener("click", replay);
 
-  // ---- home soc lab: wazuh FIM replay ----
+  // Auto-playing log feed: lines arrive one by one, the box scrolls like a live tail,
+  // then it pauses, clears and starts again. Runs only while on screen.
+  function feed(o) {
+    var logEl = document.getElementById(o.log), countsEl = document.getElementById(o.counts), btn = document.getElementById(o.btn);
+    if (!logEl) return;
+    var rows = o.rows, i = 0, timer = null, running = false, visible = false;
+    function counts(n) { countsEl.innerHTML = o.summary(rows.slice(0, n)); }
+    function showAll() {
+      var h = ""; for (var k = 0; k < rows.length; k++) h += lineHtml(rows[k]);
+      logEl.innerHTML = h; counts(rows.length); logEl.scrollTop = 0;
+      if (o.onLine) [].forEach.call(logEl.children, function (el, k) { o.onLine(el, rows[k]); });
+    }
+    function begin() { clearTimeout(timer); timer = null; i = 0; logEl.innerHTML = ""; logEl.scrollTop = 0; counts(0); if (o.onBegin) o.onBegin(); next(); }
+    function next() {
+      if (!visible || document.hidden) { running = false; return; }
+      running = true;
+      if (i >= rows.length) { timer = setTimeout(begin, o.hold); return; }
+      var r = rows[i++];
+      logEl.insertAdjacentHTML("beforeend", lineHtml(r));
+      if (o.onLine) o.onLine(logEl.lastElementChild, r);
+      counts(i);
+      logEl.scrollTop = logEl.scrollHeight;
+      timer = setTimeout(next, r[0] === "alert" ? o.delay * 1.7 : o.delay);
+    }
+    function resume() { if (!running && !reduceMotion) next(); }
+    showAll();
+    if (btn) btn.addEventListener("click", function () { if (reduceMotion) { showAll(); } else { visible = true; begin(); } });
+    if (reduceMotion) return;
+    if ("IntersectionObserver" in window) {
+      new IntersectionObserver(function (es) {
+        visible = es[0].isIntersecting;
+        if (visible && i === 0 && !running) begin(); else if (visible) resume();
+      }, { threshold: 0.2 }).observe(logEl.parentNode);
+    } else { visible = true; begin(); }
+    document.addEventListener("visibilitychange", function () { if (!document.hidden) resume(); });
+  }
+
+  // ---- sample log (simulated attacks) ----
+  feed({
+    log: "log", counts: "counts", btn: "replay", delay: 260, hold: 3200,
+    rows: [
+      ["fail", "02:30:10", "Failed password for root from 203.0.113.50"],
+      ["fail", "02:30:11", "Failed password for root from 203.0.113.50"],
+      ["fail", "02:30:12", "Failed password for root from 203.0.113.50"],
+      ["skip", "", "... 5 more failures for root, last at 02:30:17"],
+      ["alert", "high", "HIGH", "SSH brute force, root, 8 failures in 7 s  T1110.001"],
+      ["ok", "03:12:00", "Accepted publickey for alice from 10.0.0.99"],
+      ["alert", "low", "LOW", "Off-hours login, alice, 03:12  T1078"],
+      ["fail", "05:00:01", "Failed password for admin from 198.51.100.7"],
+      ["fail", "05:00:02", "Failed password for test from 198.51.100.7"],
+      ["fail", "05:00:03", "Failed password for oracle from 198.51.100.7"],
+      ["skip", "", "... 3 more usernames, last at 05:00:06"],
+      ["alert", "high", "HIGH", "Password spraying, 6 usernames  T1110.003"],
+      ["probe", "06:00:01", "Invalid user admin1 from 192.0.2.99"],
+      ["probe", "06:00:02", "Invalid user support from 192.0.2.99"],
+      ["skip", "", "... 4 more invalid users, last at 06:00:06"],
+      ["alert", "med", "MEDIUM", "Username enumeration, 6 invalid users  T1087.001"],
+      ["fail", "13:00:10", "Failed password for deploy from 203.0.113.77"],
+      ["skip", "", "... 5 more failures for deploy, last at 13:00:15"],
+      ["ok", "13:01:30", "Accepted password for deploy from 203.0.113.77"],
+      ["alert", "crit", "CRITICAL", "Login success after 6 failures, deploy  T1110.001 > T1078"]
+    ],
+    summary: function (rs) {
+      var c = { crit: 0, high: 0, med: 0, low: 0 };
+      rs.forEach(function (r) { if (r[0] === "alert") c[r[1]]++; });
+      return '<span class="t-crit"><b>' + c.crit + '</b> critical</span><span class="t-high"><b>' + c.high + '</b> high</span><span class="t-med"><b>' + c.med + '</b> medium</span><span class="t-low"><b>' + c.low + '</b> low</span>';
+    }
+  });
+
+  // ---- home soc lab: wazuh FIM log, same auto-loop as the SSH log; click a line for the analyst view ----
   (function () {
-    var rows = [
-      ["skip", "", "... many HKEY_LOCAL_MACHINE registry changes on win-pc, hidden by: NOT syscheck.path:HKEY*"],
-      ["ok", "21:43:20", "kali    added     /usr/sbin/ufw"],
-      ["alert", "low", "LEVEL 5", "New binary after my own apt install ufw. Benign.  rule 554"],
-      ["ok", "21:49:48", "win-pc  added     ...\\wazuh-test\\test.txt"],
-      ["alert", "low", "LEVEL 5", "File created in monitored folder  rule 554"],
-      ["probe", "21:49:58", "win-pc  modified  ...\\wazuh-test\\test.txt"],
-      ["alert", "med", "LEVEL 7", "Integrity checksum changed  rule 550"],
-      ["fail", "21:50:08", "win-pc  deleted   ...\\wazuh-test\\test.txt"],
-      ["alert", "med", "LEVEL 7", "File deleted  rule 553"]
+    var detail = document.getElementById("detail");
+    var D = {
+      ufw: { t: "New binary on the Kali VM", rule: "554, file added", verdict: "Benign true positive", next: "Matches my own apt install ufw a minute earlier. Note it and close it." },
+      add: { t: "File created on win-pc", rule: "554, file added", verdict: "Test activity", next: "This is my own test file in the monitored folder. For an unknown file I would check who created it and which process." },
+      mod: { t: "Checksum changed", rule: "550, integrity checksum changed", verdict: "Test activity", next: "I edited the file on purpose. Normally I would compare the old and new hash and find the user and process behind the change." },
+      del: { t: "File deleted", rule: "553, file deleted", verdict: "Test activity", next: "I deleted my test file. For an unknown file I would check whether other files disappeared around the same time." }
+    };
+    function show(el, d) {
+      [].forEach.call(document.querySelectorAll("#wlog .sel"), function (x) { x.classList.remove("sel"); });
+      el.classList.add("sel");
+      detail.innerHTML = "<h4>" + d.t + "</h4><dl><dt>Rule</dt><dd>" + d.rule + "</dd><dt>Verdict</dt><dd>" + d.verdict + "</dd><dt>Next step</dt><dd>" + d.next + "</dd></dl>";
+    }
+    function reset() { detail.innerHTML = '<h4>Analyst view</h4><span class="dim">Click a log line to see what it means and what I would do next.</span>'; }
+    reset();
+    feed({
+      log: "wlog", counts: "wcounts", delay: 480, hold: 3200, onLine: function (el, r) {
+        var d = r[r[0] === "alert" ? 4 : 3]; if (!d) return;
+        el.classList.add("go"); el.tabIndex = 0;
+        el.addEventListener("click", function () { show(el, d); });
+        el.addEventListener("keydown", function (e) { if (e.key === "Enter") show(el, d); });
+      }, onBegin: reset,
+      rows: [
+        ["skip", "", "... many HKEY_LOCAL_MACHINE registry changes on win-pc, hidden by: NOT syscheck.path:HKEY*"],
+        ["ok", "21:43:20", "kali    added     /usr/sbin/ufw", D.ufw],
+        ["alert", "low", "LEVEL 5", "New binary after my own apt install ufw. Benign.  rule 554", D.ufw],
+        ["ok", "21:49:48", "win-pc  added     ...\\wazuh-test\\test.txt", D.add],
+        ["alert", "low", "LEVEL 5", "File created in monitored folder  rule 554", D.add],
+        ["probe", "21:49:58", "win-pc  modified  ...\\wazuh-test\\test.txt", D.mod],
+        ["alert", "med", "LEVEL 7", "Integrity checksum changed  rule 550", D.mod],
+        ["fail", "21:50:08", "win-pc  deleted   ...\\wazuh-test\\test.txt", D.del],
+        ["alert", "med", "LEVEL 7", "File deleted  rule 553", D.del]
+      ],
+      summary: function (rs) {
+        var c = { ok: 0, probe: 0, fail: 0 };
+        rs.forEach(function (r) { if (c[r[0]] !== undefined) c[r[0]]++; });
+        return '<span class="t-low"><b>' + c.ok + '</b> added</span><span class="t-med"><b>' + c.probe + '</b> modified</span><span class="t-crit"><b>' + c.fail + '</b> deleted</span>';
+      }
+    });
+  })();
+
+  // ---- architecture diagram: an event packet travels agent > manager > indexer > Grafana, on repeat ----
+  (function () {
+    var svg = document.getElementById("flow"); if (!svg || reduceMotion) return;
+    var NS = "http://www.w3.org/2000/svg";
+    var pkt = document.getElementById("pkt"), pr = pkt.querySelector("rect"), pt = pkt.querySelector("text"), stepEl = document.getElementById("flowStep");
+    var boxes = {}; ["agent", "mgr", "idx", "graf"].forEach(function (n) { boxes[n] = svg.querySelector('[data-n="' + n + '"]'); });
+    var stages = [
+      { on: "agent", msg: "<b>1 Agent</b> sees a file change on the Windows laptop" },
+      { d: "M180 81 L270 81", label: "FIM event", ms: 1000 },
+      { on: "mgr", msg: "<b>2 Manager</b> matches it against rules and raises an alert" },
+      { d: "M382 81 L396 81", label: "alert", ms: 450 },
+      { on: "idx", msg: "<b>3 Indexer</b> stores the alert over TLS :9200" },
+      { d: "M448 112 L448 206 L100 206 L100 238", label: "query", ms: 2200 },
+      { on: "graf", msg: "<b>4 Grafana</b> reads it with a read-only user and shows it" }
     ];
-    var logEl = document.getElementById("wlog"), countsEl = document.getElementById("wcounts"), timer = null;
-    function esc(s) { return s.replace(/&/g, "&amp;").replace(/</g, "&lt;"); }
-    function lineHtml(r) {
-      if (r[0] === "alert") return '<span class="ln alert ' + r[1] + '"><b>' + r[2] + '</b>  ' + esc(r[3]) + '</span>';
-      if (r[0] === "skip") return '<span class="ln skip">' + esc(r[2]) + '</span>';
-      return '<span class="ln ' + r[0] + '"><span class="ts">' + r[1] + '</span>  ' + esc(r[2]) + '</span>';
+    stages.forEach(function (s) { if (s.d) { var p = document.createElementNS(NS, "path"); p.setAttribute("d", s.d); s.path = p; s.len = p.getTotalLength(); } });
+    var vis = false, waiters = [];
+    function wake() { if (vis && !document.hidden) { var w = waiters; waiters = []; w.forEach(function (f) { f(); }); } }
+    function gate() { return (vis && !document.hidden) ? Promise.resolve() : new Promise(function (r) { waiters.push(r); }); }
+    function sleep(ms) { return new Promise(function (r) { setTimeout(r, ms); }); }
+    function light(n) { Object.keys(boxes).forEach(function (k) { boxes[k].classList.toggle("on", k === n); }); }
+    function travel(s) {
+      pt.textContent = s.label;
+      var fs = parseFloat(getComputedStyle(pt).fontSize) || 10, w = pt.getComputedTextLength() + fs * 1.4, h = fs * 1.8;
+      pr.setAttribute("x", -w / 2); pr.setAttribute("y", -h / 2); pr.setAttribute("width", w); pr.setAttribute("height", h); pr.setAttribute("rx", 4);
+      return new Promise(function (res) {
+        var t0 = null;
+        (function f(ts) {
+          if (t0 === null) t0 = ts;
+          var k = Math.min(1, (ts - t0) / s.ms), e = k < .5 ? 2 * k * k : 1 - Math.pow(-2 * k + 2, 2) / 2, q = s.path.getPointAtLength(s.len * e);
+          pkt.setAttribute("transform", "translate(" + q.x + " " + q.y + ")");
+          pkt.style.opacity = Math.min(1, k * 8, (1 - k) * 8 + .2);
+          if (k < 1) requestAnimationFrame(f); else res();
+        })(performance.now());
+      });
     }
-    function render(n) {
-      var html = "", c = { ok: 0, probe: 0, fail: 0 };
-      for (var i = 0; i < n; i++) { html += lineHtml(rows[i]); if (c[rows[i][0]] !== undefined) c[rows[i][0]]++; }
-      logEl.innerHTML = html;
-      countsEl.innerHTML = '<span class="t-low"><b>' + c.ok + '</b> added</span><span class="t-med"><b>' + c.probe + '</b> modified</span><span class="t-crit"><b>' + c.fail + '</b> deleted</span>';
+    async function run() {
+      for (;;) {
+        for (var i = 0; i < stages.length; i++) {
+          await gate(); var s = stages[i];
+          if (s.d) { light(null); await travel(s); }
+          else { light(s.on); stepEl.innerHTML = s.msg; await sleep(s.on === "graf" ? 1500 : 600); }
+        }
+        pkt.style.opacity = 0; light(null); await sleep(600);
+      }
     }
-    function replay() {
-      if (timer) clearInterval(timer);
-      var reduce = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-      if (reduce) { render(rows.length); return; }
-      var i = 0; render(0);
-      timer = setInterval(function () { i++; render(i); if (i >= rows.length) { clearInterval(timer); timer = null; } }, 420);
+    if ("IntersectionObserver" in window) new IntersectionObserver(function (es) { vis = es[0].isIntersecting; wake(); }, { threshold: 0.25 }).observe(svg);
+    else vis = true;
+    document.addEventListener("visibilitychange", wake);
+    run();
+  })();
+
+  // ---- one-by-one highlight: tool chips first, then the finding rows, then repeat ----
+  (function () {
+    if (reduceMotion) return;
+    var lists = document.querySelectorAll("ul.chips"), tables = document.querySelectorAll("table");
+    [].forEach.call(lists, function (ul, k) {
+      var items = [].slice.call(ul.querySelectorAll("li")).map(function (el) { return { el: el, ms: 650 }; });
+      var tb = tables[k], watch = [ul];
+      if (tb) { watch.push(tb); [].forEach.call(tb.querySelectorAll("tbody tr"), function (tr) { items.push({ el: tr, ms: 1100 }); }); }
+      var seen = [], i = -1, prev = null, running = false, timer = null;
+      function vis() { return seen.some(Boolean); }
+      function step() {
+        if (!vis() || document.hidden) { running = false; return; }
+        running = true;
+        if (prev) prev.classList.remove("lit");
+        i = (i + 1) % (items.length + 1);
+        var it = items[i];
+        if (it) { it.el.classList.add("lit"); prev = it.el; timer = setTimeout(step, it.ms); }
+        else { prev = null; timer = setTimeout(step, 1200); }
+      }
+      function wake() { if (!running) step(); }
+      if ("IntersectionObserver" in window) {
+        var io = new IntersectionObserver(function (es) { es.forEach(function (e) { seen[watch.indexOf(e.target)] = e.isIntersecting; }); wake(); }, { threshold: 0.25 });
+        watch.forEach(function (w) { io.observe(w); });
+      } else { seen = [true]; wake(); }
+      document.addEventListener("visibilitychange", function () { if (!document.hidden) wake(); });
+    });
+  })();
+
+  // ---- nav: mark the section currently in view ----
+  (function () {
+    var links = [].slice.call(document.querySelectorAll(".nav a[href^='#']")), nav = document.querySelector(".nav");
+    var secs = links.map(function (a) { return document.querySelector(a.getAttribute("href")); });
+    var cur = -1, ticking = false;
+    function update() {
+      ticking = false;
+      var y = 120, idx = -1;
+      secs.forEach(function (s, i) { if (s && s.getBoundingClientRect().top <= y) idx = i; });
+      var atEnd = window.innerHeight + window.scrollY >= document.documentElement.scrollHeight - 4;
+      if (atEnd) idx = secs.length - 1;
+      if (idx === cur) return;
+      cur = idx;
+      links.forEach(function (a, i) { a.classList.toggle("on", i === idx); if (i === idx) a.setAttribute("aria-current", "true"); else a.removeAttribute("aria-current"); });
+      if (idx >= 0 && nav.scrollWidth > nav.clientWidth) nav.scrollTo({ left: links[idx].offsetLeft - 24, behavior: "smooth" });
     }
-    render(rows.length);
-    document.getElementById("wreplay").addEventListener("click", replay);
+    window.addEventListener("scroll", function () { if (!ticking) { ticking = true; requestAnimationFrame(update); } }, { passive: true });
+    window.addEventListener("resize", update);
+    update();
+  })();
+
+  // ---- skills: chips light up one after another, column by column ----
+  (function () {
+    if (reduceMotion) return;
+    var box = document.querySelector(".cols"); if (!box) return;
+    var items = [].slice.call(box.querySelectorAll("li")), i = -1, prev = null, vis = false, running = false;
+    function step() {
+      if (!vis || document.hidden) { running = false; return; }
+      running = true;
+      if (prev) prev.classList.remove("lit");
+      i = (i + 1) % (items.length + 1);
+      if (items[i]) { items[i].classList.add("lit"); prev = items[i]; setTimeout(step, 700); }
+      else { prev = null; setTimeout(step, 1400); }
+    }
+    function wake() { if (!running) step(); }
+    if ("IntersectionObserver" in window) new IntersectionObserver(function (es) { vis = es[0].isIntersecting; wake(); }, { threshold: 0.2 }).observe(box);
+    else { vis = true; wake(); }
+    document.addEventListener("visibilitychange", function () { if (!document.hidden) wake(); });
   })();
 
   // ---- background: slow network graph with an occasional alert pulse ----
