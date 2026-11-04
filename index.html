@@ -5,6 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="description" content="Shivang Rohilla, SOC Analyst (L1) candidate. SSH log analysis, incident reporting, Linux security.">
 <title>Shivang Rohilla | SOC Analyst (L1)</title>
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%230B111F'/%3E%3Cpath d='M32 8 52 15v15c0 13-8.5 21.5-20 26C20.5 51.5 12 43 12 30V15z' fill='none' stroke='%236CA6FF' stroke-width='3.5' stroke-linejoin='round'/%3E%3Ctext x='32' y='39' text-anchor='middle' font-family='Arial,sans-serif' font-weight='800' font-size='19' fill='%23E6EBF5'%3ESR%3C/text%3E%3C/svg%3E">
 <meta property="og:type" content="website">
 <meta property="og:title" content="Shivang Rohilla | SOC Analyst (L1)">
 <meta property="og:description" content="Reads logs, names the attack, writes it up. SSH log analysis and a live Wazuh home lab.">
@@ -294,6 +295,54 @@ body::before { content: ""; position: fixed; inset: 0; z-index: -1; pointer-even
 body::after { content: ""; position: fixed; inset: 0; z-index: -1; pointer-events: none;
   background: radial-gradient(900px 480px at 82% -6%, color-mix(in srgb, var(--accent) 20%, transparent), transparent 70%),
               radial-gradient(700px 420px at 4% 38%, color-mix(in srgb, var(--accent) 9%, transparent), transparent 70%); }
+
+/* splunk project: live-style dashboard */
+.sd-frame { --sd-bg:#0B111F; --sd-panel:#05080F; --sd-head:#1b2230; --sd-line:#25314B; --sd-fg:#E6EBF5; --sd-muted:#92A0BA; --sd-blue:#53A2FF; --sd-red:#FF5C5C; --sd-amber:#FFAE22; --sd-green:#2ECC71; --sd-purple:#A87DFF; --sd-mono: ui-monospace, "JetBrains Mono", Menlo, Consolas, monospace; }
+.sd-frame * { box-sizing:border-box; }
+
+.sd-frame { color:var(--sd-fg); font-family:system-ui,"Segoe UI",sans-serif; line-height:1.4; border:1px solid var(--sd-line); border-radius:12px; overflow:hidden; background:var(--sd-panel); box-shadow:0 18px 50px -24px rgba(0,0,0,.7); }
+.sd-top { display:flex; align-items:center; gap:10px; padding:10px 14px; border-bottom:1px solid #1B2540; font-family:var(--sd-mono); font-size:12px; color:var(--sd-muted); }
+.sd-top .sd-dots { display:flex; gap:6px; } .sd-top .sd-dots i { width:9px; height:9px; border-radius:50%; background:#26335A; display:block; }
+.sd-top .sd-tt { flex:1; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+.sd-live { display:inline-flex; align-items:center; gap:7px; color:#7BD8A4; }
+.sd-live i { width:7px; height:7px; border-radius:50%; background:#7BD8A4; animation:p 1.8s infinite; }
+@keyframes p { 0%{box-shadow:0 0 0 0 rgba(123,216,164,.6)} 70%,100%{box-shadow:0 0 0 8px transparent} }
+.sd-hero { padding:14px 16px 12px; background:linear-gradient(120deg,#0e2430,#17313d); border-bottom:1px solid #1B2540; }
+.sd-hero .sd-h2 { margin:0; font-size:16px; font-weight:700; line-height:1.3; } .sd-hero p { margin:2px 0 10px; font-size:11px; color:#7fd0e8; }
+.sd-kpis { display:grid; grid-template-columns:repeat(5,1fr); gap:8px; }
+.sd-kpi { background:rgba(255,255,255,.05); border:1px solid rgba(255,255,255,.08); border-left:3px solid var(--sd-c); border-radius:4px; padding:6px 10px; }
+.sd-kpi b { display:block; font-size:18px; font-variant-numeric:tabular-nums; } .sd-kpi span { font-size:9.5px; letter-spacing:.06em; color:var(--sd-muted); text-transform:uppercase; }
+.sd-grid { display:grid; grid-template-columns:1fr 1fr; gap:6px; padding:6px; background:#10151f; }
+.sd-panel { background:var(--sd-panel); border:1px solid #1d2433; border-radius:4px; min-width:0; }
+.sd-panel.sd-wide { grid-column:1 / -1; }
+.sd-panel h3 { margin:0; padding:6px 10px; font-size:11px; font-weight:600; background:var(--sd-head); }
+.sd-body { padding:8px 10px 6px; }
+/* column charts */
+.sd-cols { position:relative; height:150px; display:flex; align-items:flex-end; gap:6px; margin-left:22px; border-bottom:1px solid #394258;
+  background:repeating-linear-gradient(to top, transparent 0, transparent calc(33.33% - 1px), #1c2332 calc(33.33% - 1px), #1c2332 33.33%); }
+.sd-cols .sd-y { position:absolute; left:-22px; width:18px; text-align:right; font-size:9px; color:var(--sd-muted); font-family:var(--sd-mono); transform:translateY(50%); }
+.sd-col { flex:1; height:100%; display:flex; align-items:flex-end; justify-content:center; gap:2px; position:relative; }
+.sd-bar { flex:1; max-width:44px; border-radius:2px 2px 0 0; transition:height 1.1s cubic-bezier(.3,.7,.2,1); position:relative; }
+.sd-bar em { position:absolute; left:50%; bottom:100%; transform:translateX(-50%); font-style:normal; font-size:9px; padding-bottom:2px; color:#cfd7e8; font-family:var(--sd-mono); white-space:nowrap; }
+.sd-xlv span { text-align:right; writing-mode:vertical-rl; transform:rotate(180deg); height:56px; font-size:8.5px; }
+.sd-xl { display:flex; gap:6px; margin:3px 0 0 22px; } .sd-xl span { flex:1; text-align:center; font-size:9px; color:var(--sd-muted); font-family:var(--sd-mono); }
+.sd-legend { display:flex; gap:12px; justify-content:center; font-size:10px; color:var(--sd-muted); margin-bottom:4px; } .sd-legend i { display:inline-block; width:9px; height:9px; margin-right:4px; vertical-align:-1px; border-radius:2px; }
+/* pie */
+.sd-pie { display:flex; align-items:center; justify-content:center; gap:16px; height:176px; }
+.sd-pie svg { width:150px; height:150px; flex:none; } .sd-pie ul { list-style:none; margin:0; padding:0; font-size:11px; }
+.sd-pie li { margin:5px 0; display:flex; align-items:center; gap:7px; color:#cfd7e8; } .sd-pie li i { width:9px; height:9px; border-radius:2px; flex:none; } .sd-pie li b { font-family:var(--sd-mono); font-weight:500; margin-left:auto; padding-left:10px; font-variant-numeric:tabular-nums; }
+/* horizontal */
+.sd-hrow { display:flex; align-items:center; gap:8px; margin:3px 0; } .sd-hrow span { width:34px; font-size:9px; color:var(--sd-muted); font-family:var(--sd-mono); }
+.sd-hrow .sd-track { flex:1; height:13px; } .sd-hrow .sd-bar { display:block; height:100%; width:0; border-radius:0 2px 2px 0; transition:width 1.1s cubic-bezier(.3,.7,.2,1); position:relative; max-width:none; }
+.sd-hrow .sd-bar em { left:100%; bottom:auto; top:50%; transform:translate(4px,-50%); padding:0; }
+.sd-panel { transition: opacity .6s; } .sd-panel.sd-dim { opacity:.28; }
+.sd-kpi { transition: background .3s, box-shadow .3s; } .sd-kpi.sd-on { background:rgba(255,255,255,.13); box-shadow:0 0 0 1px var(--sd-c), 0 0 18px -4px var(--sd-c); }
+.sd-kpi b { transition: color .3s; } .sd-kpi.sd-on b { color:#fff; }
+.sd-top button { font:inherit; color:#C7D1E6; background:#131C33; border:1px solid #26335A; border-radius:6px; padding:3px 10px; cursor:pointer; } .sd-top button:hover { background:#1A2547; }
+@media (max-width:700px){ .sd-grid{grid-template-columns:1fr} .sd-kpis{grid-template-columns:repeat(2,1fr)} .sd-kpi:first-child{grid-column:1/-1} }
+@media (prefers-reduced-motion:reduce){ .sd-bar,.sd-hrow .sd-bar{transition:none} .sd-live i{animation:none} }
+
+.sd-wrap { margin: 8px 0 24px; }
 </style>
 <style>:root{color-scheme:light}body{margin:0}</style>
 </head>
@@ -323,7 +372,8 @@ body::after { content: ""; position: fixed; inset: 0; z-index: -1; pointer-event
       <p class="lede">Entry-level SOC analyst. <b>I read authentication logs, name the attack pattern, rate it and write it up</b> so the next person knows what to do.</p>
       <div class="cta">
         <a class="btn primary" href="Shivang_Rohilla_SOC_Resume.pdf" download>&#8595; Download resume</a>
-        <a class="btn" href="https://github.com/rajputshivang2004-prog/ssh-log-analysis-lab" target="_blank" rel="noopener">See the SSH log lab</a>
+        <a class="btn" href="#splunk">See Splunk project</a>
+        <a class="btn" href="https://github.com/cybershivang/ssh-log-analysis-lab" target="_blank" rel="noopener">See the SSH log lab</a>
         <a class="btn" href="https://www.linkedin.com/in/cybershivang/" target="_blank" rel="noopener">LinkedIn</a>
         <a class="btn hm" href="#contact">Get in touch</a>
       </div>
@@ -338,7 +388,7 @@ body::after { content: ""; position: fixed; inset: 0; z-index: -1; pointer-event
         <div class="log" id="log" role="log" aria-label="SSH authentication log with detections"></div>
         <div class="term-foot" id="counts"></div>
       </div>
-      <p class="note">Five attack patterns planted in a sample log, then found with grep, cut, sort and uniq.</p>
+      <p class="note">Five attack patterns planted in a sample log, found with grep, cut, sort and uniq, then repeated in Splunk with SPL (<a href="#splunk">see the dashboard</a>).</p>
     </div>
   </section>
 
@@ -358,7 +408,7 @@ body::after { content: ""; position: fixed; inset: 0; z-index: -1; pointer-event
           <li>Rated each finding by severity, built the timeline and wrote an incident report with containment steps: reset the account, block the IPs, move SSH to key-based login.</li>
           <li>Repeated the work on real events from my own Kali VM: 9 failed logins in about 3 minutes across 5 made-up usernames, then a successful login.</li>
         </ul>
-        <a class="btn" href="https://github.com/rajputshivang2004-prog/ssh-log-analysis-lab" target="_blank" rel="noopener">Read the incident report on GitHub</a>
+        <a class="btn" href="https://github.com/cybershivang/ssh-log-analysis-lab" target="_blank" rel="noopener">Read the incident report on GitHub</a>
       </div>
     </div>
 
@@ -373,6 +423,50 @@ body::after { content: ""; position: fixed; inset: 0; z-index: -1; pointer-event
           <tr><td data-label="Severity"><span class="sev low">LOW</span></td><td class="mono" data-label="Source IP">10.0.0.99</td><td data-label="Target">alice</td><td data-label="What happened">Key login outside working hours, no failures before it</td><td class="mono" data-label="Window">03:12:00</td><td class="mono" data-label="MITRE">T1078</td></tr>
         </tbody>
       </table>
+    </div>
+
+    <div class="case" id="splunk" style="margin-top: 36px; scroll-margin-top: 80px;">
+      <div>
+        <h3>SSH Log Analysis using Splunk: Brute Force &amp; Scan Detection</h3>
+        <ul class="chips" aria-label="Stack">
+          <li>Splunk Enterprise</li><li>SPL</li><li>Classic Dashboards</li><li>Scheduled Alert</li><li>MITRE ATT&amp;CK</li>
+        </ul>
+      </div>
+      <div>
+        <ul class="pts">
+          <li>Ingested and parsed <b>1,200 SSH events</b> (Zeek-style JSON) in Splunk and wrote SPL searches (<b>stats, bin, where, sort</b>) for failed logins, brute force, successful logins and unauthenticated connections.</li>
+          <li>Found <b>28 source IPs</b> with 5+ multiple-failure events (top offender: 13 events, 82 attempts), all inside <b>one 10-minute window</b>, and <b>305 failed logins from 50 IPs</b> that point to low-and-slow password spraying.</li>
+          <li>Flagged <b>286 connections without authentication</b> from 49 IPs as possible scanning, and tracked 306 successful logins.</li>
+          <li>Built a <b>5-panel dark-theme dashboard</b> (Classic XML) plus an hourly scheduled alert, <i>SSH Brute Force Detected</i>, for SOC-style reporting.</li>
+        </ul>
+        <a class="btn" href="https://github.com/cybershivang/splunk-ssh-log-analysis" target="_blank" rel="noopener">See the project on GitHub</a>
+      </div>
+    </div>
+    <div class="sd-wrap">
+<div class="sd-frame">
+    <div class="sd-top"><span class="sd-dots"><i></i><i></i><i></i></span><span class="sd-tt">splunk enterprise &middot; SSH Log Analysis dashboard (replay of my lab results)</span><span class="sd-live"><i></i><span id="clock">live</span></span><button type="button" id="replay">Replay</button></div>
+    <div class="sd-hero">
+      <div class="sd-h2">SSH Log Analysis using Splunk</div>
+      <p>SOC analyst view: brute force, failed and successful logins, unauthenticated connections</p>
+      <div class="sd-kpis">
+        <div class="sd-kpi" style="--sd-c:#53A2FF"><b id="k0">1,200</b><span>Total events</span></div>
+        <div class="sd-kpi" style="--sd-c:#FF5C5C"><b id="k1">305</b><span>Failed logins</span></div>
+        <div class="sd-kpi" style="--sd-c:#FFAE22"><b id="k2">303</b><span>Multiple failure</span></div>
+        <div class="sd-kpi" style="--sd-c:#2ECC71"><b id="k3">306</b><span>Successful logins</span></div>
+        <div class="sd-kpi" style="--sd-c:#A87DFF"><b id="k4">286</b><span>No-auth connections</span></div>
+      </div>
+    </div>
+    <div class="sd-grid">
+      <div class="sd-panel"><h3>Task 1: Events by Type</h3><div class="sd-body"><div class="sd-pie">
+        <svg viewBox="-50 -50 100 100" aria-label="Pie chart of events by type"><circle r="44" fill="none" stroke="#26335A" stroke-width="1" stroke-dasharray="2 3"></circle><g id="slices"></g></svg>
+        <ul id="pieLegend"></ul></div></div></div>
+      <div class="sd-panel"><h3>Task 2: Top 10 Source IPs - Failed SSH Logins</h3><div class="sd-body"><div id="c2"></div></div></div>
+      <div class="sd-panel"><h3>Task 3: Brute Force - IPs with more than 5 Multiple-Failure Events</h3><div class="sd-body"><div class="sd-legend"><span><i style="background:var(--sd-amber)"></i>events</span><span><i style="background:var(--sd-red)"></i>total_attempts</span></div><div id="c3"></div></div></div>
+      <div class="sd-panel"><h3>Task 4: Top 10 Source IPs - Successful SSH Logins</h3><div class="sd-body"><div id="c4"></div></div></div>
+      <div class="sd-panel sd-wide"><h3>Task 5: Connections Without Authentication - Top 10 IPs (possible scanning / probing)</h3><div class="sd-body" id="c5"></div></div>
+    </div>
+  </div>
+      <p class="note">My Splunk dashboard, replayed from the numbers of my lab run (HAXCAMP dataset, 1,200 events). The bars refresh on a timer to mimic a live dashboard. The searches, dashboard and findings are my own work.</p>
     </div>
 
     <div class="now">
@@ -516,6 +610,7 @@ body::after { content: ""; position: fixed; inset: 0; z-index: -1; pointer-event
       <div>
         <h3>Tools</h3>
         <ul>
+          <li>Splunk (SPL)</li>
           <li>Kali Linux, Docker</li>
           <li>Grafana, NetAlertX</li>
           <li>Wireshark</li>
@@ -552,7 +647,7 @@ body::after { content: ""; position: fixed; inset: 0; z-index: -1; pointer-event
         <div class="cta">
           <a class="btn primary" href="Shivang_Rohilla_SOC_Resume.pdf" download>&#8595; Download resume</a>
           <a class="btn" href="https://www.linkedin.com/in/cybershivang/" target="_blank" rel="noopener">LinkedIn</a>
-          <a class="btn" href="https://github.com/rajputshivang2004-prog" target="_blank" rel="noopener">GitHub</a>
+          <a class="btn" href="https://github.com/cybershivang" target="_blank" rel="noopener">GitHub</a>
         </div>
       </div>
     </div>
@@ -895,6 +990,150 @@ body::after { content: ""; position: fixed; inset: 0; z-index: -1; pointer-event
     } else { fallback(); }
   });
 })();
+
+
+(function () {
+  var reduce = window.matchMedia && matchMedia("(prefers-reduced-motion: reduce)").matches;
+  var $ = function (id) { return document.getElementById(id); };
+  var rnd = function (a, b) { return a + Math.floor(Math.random() * (b - a + 1)); };
+  var rank = function (n) { return Array.apply(null, Array(n)).map(function (_, i) { return "#" + (i + 1); }); };
+
+  var D = {
+    failed:  { base: [11,10,10,10,10,9,9,9,9,9],        max: 15,  color: "#FF5C5C", ips: ["10.0.0.30","10.0.0.21","10.0.0.33","10.0.0.46","10.0.0.48","10.0.0.16","10.0.0.17","10.0.0.25","10.0.0.45","10.0.0.56"] },
+    ok:      { base: [11,10,10,10,9,9,9,9,9,8],         max: 15,  color: "#2ECC71", ips: rank(10) },
+    ev:      { base: [13,13,11,10,10,10,10,9,9,8],      max: 100, color: "#FFAE22" },
+    at:      { base: [82,78,69,60,58,57,56,54,50,49],   max: 100, color: "#FF5C5C", ips: rank(10) },
+    noauth:  { base: [13,13,10,10,10,9,9,9,9,8],        max: 16,  color: "#A87DFF", ips: rank(10) }
+  };
+  var PIE = [ { n: "Successful SSH Login", v: 306, c: "#53A2FF" }, { n: "Failed SSH Login", v: 305, c: "#FF5C5C" },
+              { n: "Multiple Failed Auth", v: 303, c: "#FFAE22" }, { n: "No Authentication", v: 286, c: "#2ECC71" } ];
+
+  function colChart(id, series, ips, ticks) {
+    var el = $(id), h = '<div class="sd-cols">';
+    ticks.forEach(function (t) { h += '<span class="sd-y" style="bottom:' + (t / series[0].max * 100) + '%">' + t + '</span>'; });
+    ips.forEach(function (_, i) {
+      h += '<div class="sd-col">';
+      series.forEach(function (s, k) { h += '<div class="sd-bar" data-s="' + k + '" data-i="' + i + '" style="height:0;background:' + s.color + '"><em></em></div>'; });
+      h += '</div>';
+    });
+    h += '</div><div class="sd-xl' + (ips[0].length > 5 ? ' sd-xlv' : '') + '">' + ips.map(function (x) { return '<span>' + x + '</span>'; }).join("") + '</div>';
+    el.innerHTML = h;
+    return [].slice.call(el.querySelectorAll(".sd-bar"));
+  }
+  var b2 = colChart("c2", [D.failed], D.failed.ips, [5, 10, 15]);
+  var b3 = colChart("c3", [D.ev, D.at], D.at.ips, [25, 50, 75, 100]);
+  var b4 = colChart("c4", [D.ok], D.ok.ips, [5, 10, 15]);
+  $("c5").innerHTML = D.noauth.base.map(function (_, i) {
+    return '<div class="sd-hrow"><span>' + D.noauth.ips[i] + '</span><div class="sd-track"><div class="sd-bar" data-i="' + i + '" style="background:#A87DFF"><em></em></div></div></div>';
+  }).join("");
+  var b5 = [].slice.call($("c5").querySelectorAll(".sd-bar"));
+
+  function setBars(bars, series, jit) {
+    bars.forEach(function (b) {
+      var s = series[+b.dataset.s || 0], base = s.base[+b.dataset.i];
+      var v = Math.max(1, Math.min(s.max, base + rnd(-jit, jit)));
+      b.style.height = (v / s.max * 100) + "%"; b.firstChild.textContent = v;
+    });
+  }
+  function setH(bars, d, jit) {
+    bars.forEach(function (b) {
+      var v = Math.max(1, d.base[+b.dataset.i] + rnd(-jit, jit));
+      b.style.width = (v / d.max * 100) + "%"; b.firstChild.textContent = v;
+    });
+  }
+
+  // pie
+  var cur = PIE.map(function (p) { return p.v; }), tgt = cur.slice(), pieEls = [];
+  PIE.forEach(function (p) { var e = document.createElementNS("http://www.w3.org/2000/svg", "path"); e.setAttribute("fill", p.c); e.setAttribute("stroke", "#05080F"); e.setAttribute("stroke-width", "0.8"); $("slices").appendChild(e); pieEls.push(e); });
+  $("pieLegend").innerHTML = PIE.map(function (p, i) { return '<li><i style="background:' + p.c + '"></i>' + p.n + '<b id="pl' + i + '"></b></li>'; }).join("");
+  function drawPie() {
+    var tot = cur.reduce(function (a, b) { return a + b; }, 0), a0 = -Math.PI / 2;
+    cur.forEach(function (v, i) {
+      if (tot <= 0 || v <= 0.01) { pieEls[i].setAttribute("d", ""); $("pl" + i).textContent = "0"; return; }
+      var a1 = a0 + Math.min(v / tot, 0.9995) * Math.PI * 2, r = 44, large = a1 - a0 > Math.PI ? 1 : 0;
+      pieEls[i].setAttribute("d", "M0 0 L" + (r * Math.cos(a0)).toFixed(2) + " " + (r * Math.sin(a0)).toFixed(2) + " A" + r + " " + r + " 0 " + large + " 1 " + (r * Math.cos(a1)).toFixed(2) + " " + (r * Math.sin(a1)).toFixed(2) + " Z");
+      $("pl" + i).textContent = Math.round(v) + " · " + (v / tot * 100).toFixed(1) + "%";
+      a0 = a1;
+    });
+  }
+  function easePie() {
+    var moving = false;
+    cur = cur.map(function (v, i) { var d = tgt[i] - v; if (Math.abs(d) > 0.05) { moving = true; return v + d * 0.08; } return tgt[i]; });
+    drawPie(); if (moving) requestAnimationFrame(easePie);
+  }
+  function refresh() {
+    setBars(b2, [D.failed], 1); setBars(b3, [D.ev, D.at], 3); setBars(b4, [D.ok], 1); setH(b5, D.noauth, 1);
+    tgt = PIE.map(function (p) { return p.v + rnd(-14, 14); });
+    if (reduce) { cur = tgt.slice(); drawPie(); } else requestAnimationFrame(easePie);
+    $("clock").textContent = "refreshed " + new Date().toTimeString().slice(0, 8);
+  }
+
+  // ---- startup sequence: counters spin up one by one, then the matching chart fills ----
+  var targets = [1200, 305, 303, 306, 286], pieIdx = [null, 1, 2, 0, 3];
+  var tiles = [].slice.call(document.querySelectorAll(".sd-kpi")), panels = [].slice.call(document.querySelectorAll(".sd-panel"));
+  var K = [0, 1, 2, 3, 4].map(function (i) { return $("k" + i); });
+  var tok = 0, timer = null;
+  function fmt(n) { return n.toLocaleString("en-US"); }
+  function wait(ms, t, fn) { setTimeout(function () { if (t === tok) fn(); }, ms); }
+  function count(i, dur, t, onTick, done) {
+    var t0 = performance.now(), T = targets[i];
+    tiles[i].classList.add("sd-on");
+    (function f(now) {
+      if (t !== tok) return;
+      var p = Math.min(1, (now - t0) / dur), e = 1 - Math.pow(1 - p, 3), n = Math.floor(T * e);
+      if (p < 1) n = Math.max(0, Math.min(T, n - n % 10 + rnd(0, 9)));   // last digit spins
+      else n = T;
+      K[i].textContent = fmt(n); if (onTick) onTick(p < 1 ? T * e : T);
+      if (p < 1) requestAnimationFrame(f); else { tiles[i].classList.remove("sd-on"); if (done) done(); }
+    })(t0);
+  }
+  function stagger(bars, delay) { bars.forEach(function (b, k) { b.style.transitionDelay = delay ? (k * 70) + "ms" : "0ms"; }); }
+  function fill(which) {
+    var arr = { 1: b2, 2: b3, 3: b4, 4: b5 }[which];
+    stagger(arr, true);
+    if (which === 1) setBars(b2, [D.failed], 0); if (which === 2) setBars(b3, [D.ev, D.at], 0);
+    if (which === 3) setBars(b4, [D.ok], 0); if (which === 4) setH(b5, D.noauth, 0);
+    arr.forEach(function (b) { b._t = b.firstChild.textContent; b.firstChild.textContent = ""; });
+    setTimeout(function () { arr.forEach(function (b) { b.firstChild.textContent = b._t; }); stagger(arr, false); }, 1300);
+  }
+  function reset() {
+    tok++; clearInterval(timer);
+    K.forEach(function (k) { k.textContent = "0"; });
+    tiles.forEach(function (t) { t.classList.remove("sd-on"); }); panels.forEach(function (p) { p.classList.add("sd-dim"); });
+    [b2, b3, b4].forEach(function (a) { stagger(a, false); a.forEach(function (b) { b.style.height = "0"; b.firstChild.textContent = ""; }); });
+    stagger(b5, false); b5.forEach(function (b) { b.style.width = "0"; b.firstChild.textContent = ""; });
+    cur = [0, 0, 0, 0]; tgt = cur.slice(); drawPie(); $("clock").textContent = "loading data...";
+  }
+  function finish(t) { if (t !== tok) return; $("clock").textContent = "live"; timer = setInterval(refresh, reduce ? 6000 : 2600); }
+  function run() {
+    reset(); var t = tok;
+    if (reduce) {
+      K.forEach(function (k, i) { k.textContent = fmt(targets[i]); }); panels.forEach(function (p) { p.classList.remove("sd-dim"); });
+      cur = PIE.map(function (p) { return p.v; }); drawPie(); fill(1); fill(2); fill(3); fill(4); finish(t); return;
+    }
+    wait(500, t, function () {
+      count(0, 1800, t, null, function () {                              // 1) total events 0 -> 1,200
+        var seq = [1, 2, 3, 4];
+        panels[0].classList.remove("sd-dim");
+        (function next(n) {
+          if (n >= seq.length) return finish(t);
+          var i = seq[n], pi = pieIdx[i];
+          count(i, 1200, t, function (v) { cur[pi] = v; drawPie(); }, function () {   // 2) each type counts up, pie grows with it
+            panels[i].classList.remove("sd-dim"); fill(i);                                // 3) its chart fills in
+            wait(1000, t, function () { next(n + 1); });
+          });
+        })(0);
+      });
+    });
+  }
+  $("replay").addEventListener("click", run);
+  if ("IntersectionObserver" in window) {
+    var started = false;
+    new IntersectionObserver(function (es) { if (es[0].isIntersecting && !started) { started = true; run(); } }, { threshold: 0.3 }).observe(document.querySelector(".sd-frame"));
+  } else run();
+  reset();
+})();
+
 </script>
 </body>
 </html>
